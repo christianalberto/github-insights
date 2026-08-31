@@ -1,0 +1,16 @@
+{
+  "buildCommand": "next build",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "headers": [
+    {
+      "source": "/api/insight",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=300, stale-while-revalidate=600"
+        }
+      ]
+    }
+  ]
+}
