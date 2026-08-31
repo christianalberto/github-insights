@@ -464,7 +464,7 @@ export default function Home() {
 
             
             <a
-              href="https://github.com/christianalberto/GitHub-Insights"
+              href="https://github.com/christianalberto/github-insights"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-secondary star-btn"
@@ -1453,7 +1453,7 @@ export default function Home() {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <a
-              href="https://github.com/christianalberto/GitHub-Insights"
+              href="https://github.com/christianalberto/github-insights"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -1469,7 +1469,7 @@ export default function Home() {
             </a>
             <span>•</span>
             <a
-              href="https://github.com/christianalberto/GitHub-Insights/blob/main/LICENSE"
+              href="https://github.com/christianalberto/github-insights/blob/main/LICENSE"
               target="_blank"
               rel="noopener noreferrer"
               style={{

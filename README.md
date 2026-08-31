@@ -1,7 +1,7 @@
 <h1 align="center">GitHub Insights</h1>
 
 <p align="center">
-  <img src="https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true" alt="GitHub Insights" />
+  <img src="https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true" alt="GitHub Insights" />
 </p>
 
 <p align="center">
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github-profile-insights.vercel.app">Live Demo</a> •
+  <a href="https://github-profiles-insights.vercel.app">Live Demo</a> •
   <a href="#features">Features</a> •
   <a href="#usage">Usage</a> •
   <a href="#themes">Themes</a> •
@@ -40,7 +40,7 @@ Add this to your GitHub profile README:
 
 ```markdown
 <p align="center">
-  <img src="https://github-profile-insights.vercel.app/api/insight?username=YOUR_USERNAME" alt="GitHub Insights" />
+  <img src="https://github-profiles-insights.vercel.app/api/insight?username=YOUR_USERNAME" alt="GitHub Insights" />
 </p>
 ```
 
@@ -65,7 +65,7 @@ Replace `YOUR_USERNAME` with your GitHub username.
 
 ```markdown
 <p align="center">
-  <img src="https://github-profile-insights.vercel.app/api/insight?username=YOUR_USERNAME&theme=radical&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true" alt="GitHub Insights" />
+  <img src="https://github-profiles-insights.vercel.app/api/insight?username=YOUR_USERNAME&theme=radical&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true" alt="GitHub Insights" />
 </p>
 ```
 
@@ -75,7 +75,7 @@ You can exclude certain languages so they don't appear in the languages section 
 
 ```markdown
 <p align="center">
-  <img src="https://github-profile-insights.vercel.app/api/insight?username=YOUR_USERNAME&theme=github_light&languages=true&hide_langs=HTML,CSS" alt="GitHub Insights" />
+  <img src="https://github-profiles-insights.vercel.app/api/insight?username=YOUR_USERNAME&theme=github_light&languages=true&hide_langs=HTML,CSS" alt="GitHub Insights" />
 </p>
 ```
 
@@ -83,14 +83,14 @@ You can exclude certain languages so they don't appear in the languages section 
 
 | Theme | Preview |
 |-------|---------|
-| `github_dark` | ![GitHub Dark](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `github_light` | ![GitHub Light](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=github_light&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `radical` | ![Radical](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=radical&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `tokyonight` | ![Tokyo Night](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=tokyonight&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `dracula` | ![Dracula](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=dracula&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `synthwave` | ![Synthwave](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=synthwave&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `ocean` | ![Ocean](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=ocean&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `neo_green` | ![Neo Green](https://github-profile-insights.vercel.app/api/insight?username=mojombo&theme=neo_green&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `github_dark` | ![GitHub Dark](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `github_light` | ![GitHub Light](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_light&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `radical` | ![Radical](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=radical&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `tokyonight` | ![Tokyo Night](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=tokyonight&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `dracula` | ![Dracula](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=dracula&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `synthwave` | ![Synthwave](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=synthwave&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `ocean` | ![Ocean](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ocean&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `neo_green` | ![Neo Green](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=neo_green&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 
 ## Self-Hosting
 
@@ -103,8 +103,8 @@ You can exclude certain languages so they don't appear in the languages section 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/christianalberto/GitHub-Insights.git
-   cd GitHub-Insights
+   git clone https://github.com/christianalberto/github-insights.git
+   cd github-insights
    ```
 
 2. **Install dependencies**
@@ -137,13 +137,13 @@ You can exclude certain languages so they don't appear in the languages section 
 
 ### Deploy to Diploi
 
-[![launch with diploi button](https://diploi.com/launch-big.svg)](https://diploi.com/launch/christianalberto/GitHub-Insights)
+[![launch with diploi button](https://diploi.com/launch-big.svg)](https://diploi.com/launch/christianalberto/github-insights)
 
 **Important:** In Diploi, open **Deployment Page -> Options -> Next.js -> Environment** and add the `GITHUB_TOKEN` environment variable.
 
 ### Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christianalberto/GitHub-Insights&env=GITHUB_TOKEN)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christianalberto/github-insights&env=GITHUB_TOKEN)
 
 **Important:** Add the `GITHUB_TOKEN` environment variable in your Vercel project settings.
 
