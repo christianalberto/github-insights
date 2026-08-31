@@ -107,4 +107,5 @@ export interface ThemeColors {
   iconColor: string;
   contributionLevels: string[];
   languageColorOverrides?: Record<string, string>;
+  iconColorOverrides?: Record<string, string>;
 }

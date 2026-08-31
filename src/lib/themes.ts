@@ -108,6 +108,19 @@ export const themes: Record<string, ThemeColors> = {
       '#3572a5': '#38BDAE',
       '#aa6746': '#A9AFD0',
     },
+    iconColorOverrides: {
+      '#ff6b35': '#70A5FD',
+      '#9ca3af': '#70A5FD',
+      '#10b981': '#38BDAE',
+      '#fbbf24': '#BF91F3',
+      '#34d399': '#38BDAE',
+      '#a78bfa': '#BF91F3',
+      '#f472b6': '#BF91F3',
+      '#60a5fa': '#70A5FD',
+      '#93c5fd': '#70A5FD',
+      '#6ee7b7': '#70A5FD',
+      '#c4b5fd': '#BF91F3',
+    },
   },
 
   ember_void: {

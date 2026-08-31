@@ -97,6 +97,10 @@ function getLanguageColor(color: string, theme: ThemeColors): string {
   return theme.languageColorOverrides?.[color.toLowerCase()] || color;
 }
 
+function getIconColor(color: string, theme: ThemeColors): string {
+  return theme.iconColorOverrides?.[color.toLowerCase()] || color;
+}
+
 function calculateGrade(stats: GitHubStats): { grade: string; color: string } {
   const grade = stats.rank;
   const color = getGradeColor(grade);
@@ -220,7 +224,7 @@ function renderHeaderSection(
             row.icon as "fire" | "repo" | "calendar" | "pin",
             0,
             -1,
-            row.color,
+            getIconColor(row.color, theme),
             18
           )}
           <text x="28" y="13" font-size="14" fill="${
@@ -322,7 +326,8 @@ function renderStatsCard(
 ): { svg: string; height: number } {
   const { totalStars, totalContributions, totalPRs, totalIssues, contributedRepos } =
     stats;
-  const { grade, color: gradeColor } = calculateGrade(stats);
+  const { grade, color: gradeBaseColor } = calculateGrade(stats);
+  const gradeColor = getIconColor(gradeBaseColor, theme);
 
   const statItems = [
     {
@@ -363,7 +368,7 @@ function renderStatsCard(
       item.icon,
       0,
       0,
-      item.color,
+      getIconColor(item.color, theme),
       16
     )}<text x="26" y="12" font-size="13" fill="${
       theme.textSecondary
@@ -584,7 +589,7 @@ function renderStreakSection(
                   transform="rotate(-90)"
                   stroke-linecap="round"/>
           <g transform="translate(-10, ${-circleRadius - 10})">
-            ${renderIcon("fire", 0, 0, "#ff6b35", 20)}
+            ${renderIcon("fire", 0, 0, getIconColor("#ff6b35", theme), 20)}
           </g>
           <text x="0" y="8" text-anchor="middle" font-size="22" font-weight="700" fill="${
             theme.text
@@ -671,7 +676,7 @@ export function generateStreakCard(
     accountCreatedAt,
   } = stats;
   const width = 500;
-  const height = 150;
+  const height = 160;
   const columnCenters = [83, 250, 417];
   const circleRadius = 38;
   const strokeWidth = 5;
