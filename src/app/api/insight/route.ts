@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchGitHubStats } from '@/lib/github';
-import { generateInsightCard } from '@/lib/card-generator';
+import { generateInsightCard, generateStreakCard } from '@/lib/card-generator';
 import { getTheme } from '@/lib/themes';
 
 function generateETag(content: string): string {
@@ -21,7 +21,9 @@ function generateETag(content: string): string {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const username = searchParams.get('username');
+  const cardType = searchParams.get('card');
   const themeName = searchParams.get('theme') || 'github_dark';
+  const transparent = searchParams.get('transparent') === 'true';
   const showGraph = searchParams.get('graph') !== 'false';
   const showLanguages = searchParams.get('languages') !== 'false';
   const showStreak = searchParams.get('streak') !== 'false';
@@ -61,7 +63,7 @@ export async function GET(request: NextRequest) {
     showSummary ||
     showProfile;
 
-  if (!hasAtLeastOneTelemetry) {
+  if (!hasAtLeastOneTelemetry && cardType !== 'streak') {
     return new NextResponse(
       generateErrorCard('At least one telemetry module must be enabled', getTheme(themeName)),
       {
@@ -79,16 +81,18 @@ export async function GET(request: NextRequest) {
     const stats = await fetchGitHubStats(username, hiddenLanguages);
     const theme = getTheme(themeName);
     
-    const svg = generateInsightCard(stats, {
-      theme,
-      showGraph,
-      showLanguages,
-      showStreak,
-      showStats,
-      showHeader,
-      showSummary,
-      showProfile,
-    });
+    const svg = cardType === 'streak'
+      ? generateStreakCard(stats, theme, { transparent })
+      : generateInsightCard(stats, {
+          theme,
+          showGraph,
+          showLanguages,
+          showStreak,
+          showStats,
+          showHeader,
+          showSummary,
+          showProfile,
+        });
 
     const etag = generateETag(svg);
     const ifNoneMatch = request.headers.get('if-none-match');

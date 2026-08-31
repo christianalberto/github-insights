@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 
 type SiteTheme = 'light' | 'dark' | 'system';
+type CardType = 'insight' | 'streak';
 
 interface CardThemeOption {
   id: string;
@@ -67,6 +68,8 @@ function GitHubLogo({ size = 18 }: { size?: number }) {
 export default function Home() {
   const [username, setUsername] = useState('');
   const [generatedUsername, setGeneratedUsername] = useState('');
+  const [cardType, setCardType] = useState<CardType>('insight');
+  const [transparentStreak, setTransparentStreak] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState('github_dark');
   const [showGraph, setShowGraph] = useState(true);
   const [showLanguages, setShowLanguages] = useState(true);
@@ -156,7 +159,9 @@ export default function Home() {
   }, [siteTheme, isDark, isMounted]);
 
   const hideLangsParam = hiddenLangs.length > 0 ? `&hide_langs=${encodeURIComponent(hiddenLangs.join(','))}` : '';
-  const previewUrl = `/api/insight?username=${generatedUsername}&theme=${selectedTheme}&graph=${showGraph}&languages=${showLanguages}&streak=${showStreak}&stats=${showStats}&header=${showHeader}&summary=${showSummary}&profile=${showProfile}${hideLangsParam}`;
+  const previewUrl = cardType === 'streak'
+    ? `/api/insight?username=${generatedUsername}&card=streak&theme=${selectedTheme}${transparentStreak ? '&transparent=true' : ''}`
+    : `/api/insight?username=${generatedUsername}&theme=${selectedTheme}&graph=${showGraph}&languages=${showLanguages}&streak=${showStreak}&stats=${showStats}&header=${showHeader}&summary=${showSummary}&profile=${showProfile}${hideLangsParam}`;
 
   const triggerGenerate = useCallback((targetUser: string) => {
     const trimmed = targetUser.trim();
@@ -179,7 +184,7 @@ export default function Home() {
       }, 120);
     }
 
-    const checkUrl = `/api/insight?username=${trimmed}&theme=${selectedTheme}&graph=${showGraph}&languages=${showLanguages}&streak=${showStreak}&stats=${showStats}&header=${showHeader}&summary=${showSummary}&profile=${showProfile}${hideLangsParam}&_t=${Date.now()}`;
+    const checkUrl = `${previewUrl.replace(`username=${generatedUsername}`, `username=${trimmed}`)}&_t=${Date.now()}`;
     
     fetch(checkUrl)
       .then((response) => {
@@ -203,7 +208,7 @@ export default function Home() {
         setHasError(true);
         setIsGenerating(false);
       });
-  }, [selectedTheme, showGraph, showLanguages, showStreak, showStats, showHeader, showSummary, showProfile, hideLangsParam]);
+  }, [cardType, generatedUsername, previewUrl, selectedTheme, showGraph, showLanguages, showStreak, showStats, showHeader, showSummary, showProfile, hideLangsParam, transparentStreak]);
 
   const handleGenerate = () => {
     triggerGenerate(username);
@@ -738,6 +743,77 @@ export default function Home() {
                   )}
                 </button>
               </div>
+            </div>
+
+            <div className="glass-panel" style={{ padding: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                <div
+                  style={{
+                    padding: '6px',
+                    borderRadius: '8px',
+                    backgroundColor: isDark ? 'rgba(96, 165, 250, 0.15)' : 'rgba(37, 99, 235, 0.08)',
+                    color: isDark ? '#60a5fa' : '#2563eb',
+                    display: 'flex',
+                  }}
+                >
+                  <FileCode size={16} />
+                </div>
+                <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)' }}>
+                  Card Format
+                </h2>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
+                {[
+                  { id: 'insight' as CardType, label: 'Full Insights', desc: 'Complete analytics card', icon: Sparkles },
+                  { id: 'streak' as CardType, label: 'Streak Card', desc: 'Compact streak-only card', icon: Trophy },
+                ].map((option) => {
+                  const Icon = option.icon;
+                  const isSelected = cardType === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => setCardType(option.id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        border: '1px solid',
+                        borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
+                        backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
+                        color: isSelected ? 'var(--primary)' : 'var(--text-muted)',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        boxShadow: isSelected ? '0 0 0 1px var(--primary), 0 0 12px var(--primary-glow)' : 'none',
+                      }}
+                    >
+                      <Icon size={16} />
+                      <span>
+                        <span style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: isSelected ? 'var(--text-main)' : 'var(--text-muted)' }}>
+                          {option.label}
+                        </span>
+                        <span style={{ display: 'block', marginTop: '3px', fontSize: '10px', color: 'var(--text-subtle)' }}>
+                          {option.desc}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {cardType === 'streak' && (
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={transparentStreak}
+                    onChange={(e) => setTransparentStreak(e.target.checked)}
+                  />
+                  Transparent background
+                </label>
+              )}
             </div>
 
             
