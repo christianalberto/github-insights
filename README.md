@@ -1,7 +1,7 @@
 <h1 align="center">GitHub Insights</h1>
 
 <p align="center">
-  <img src="https://github-profiles-insights.vercel.app/api/insight?username=christianalberto&theme=github_dark&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true" alt="GitHub Insights" />
+  <img src="https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true" alt="GitHub Insights" />
 </p>
 
 <p align="center">
