@@ -68,7 +68,24 @@ query($username: String!) {
         }
       }
     }
-    repositories(first: 100, ownerAffiliations: OWNER, orderBy: {field: STARGAZERS, direction: DESC}, privacy: PUBLIC) {
+    repositories: repositories(first: 100, ownerAffiliations: OWNER, orderBy: {field: STARGAZERS, direction: DESC}, privacy: PUBLIC) {
+      totalCount
+      nodes {
+        stargazerCount
+        forkCount
+        isFork
+        languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+          edges {
+            size
+            node {
+              name
+              color
+            }
+          }
+        }
+      }
+    }
+    privateRepositories: repositories(first: 100, ownerAffiliations: OWNER, orderBy: {field: STARGAZERS, direction: DESC}, privacy: PRIVATE) {
       totalCount
       nodes {
         stargazerCount
@@ -407,6 +424,12 @@ async function executeFetchGitHubStats(username: string, hiddenLanguages: string
     }
 
     const rawUser = data.data.user;
+    const publicRepositories = rawUser.repositories || { totalCount: 0, nodes: [] };
+    const privateRepositories = rawUser.privateRepositories || { totalCount: 0, nodes: [] };
+    const repositories = {
+      totalCount: publicRepositories.totalCount + privateRepositories.totalCount,
+      nodes: [...publicRepositories.nodes, ...privateRepositories.nodes],
+    };
     const user: GitHubUser = {
       login: rawUser.login,
       name: rawUser.name,
@@ -414,7 +437,7 @@ async function executeFetchGitHubStats(username: string, hiddenLanguages: string
       createdAt: rawUser.createdAt,
       followers: rawUser.followers || { totalCount: 0 },
       pullRequests: rawUser.pullRequests || { totalCount: 0 },
-      repositories: rawUser.repositories || { totalCount: 0, nodes: [] },
+      repositories,
       contributionsCollection: rawUser.contributionsCollection || {
         totalCommitContributions: 0,
         totalIssueContributions: 0,
