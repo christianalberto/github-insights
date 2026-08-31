@@ -186,7 +186,7 @@ function renderHeaderSection(
         {
           icon: "repo",
           color: theme.accent,
-          text: `${repoCount.toLocaleString()} public ${repoCount === 1 ? "repository" : "repositories"}`,
+          text: `${repoCount.toLocaleString()} ${repoCount === 1 ? "repository" : "repositories"} (public + private)`,
         },
         {
           icon: "calendar",
