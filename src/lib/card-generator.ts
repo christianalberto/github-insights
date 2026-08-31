@@ -93,6 +93,10 @@ function getGradeColor(rank: string): string {
   return GRADE_COLORS[rank] || '#9ca3af';
 }
 
+function getLanguageColor(color: string, theme: ThemeColors): string {
+  return theme.languageColorOverrides?.[color.toLowerCase()] || color;
+}
+
 function calculateGrade(stats: GitHubStats): { grade: string; color: string } {
   const grade = stats.rank;
   const color = getGradeColor(grade);
@@ -435,11 +439,12 @@ function renderLanguagesCard(
 
   for (let index = 0; index < validLangs.length; index++) {
     const lang = validLangs[index];
+    const langColor = getLanguageColor(lang.color, theme);
     const normalizedPercentage = (lang.percentage / totalPercentage) * 100;
     const width = (normalizedPercentage / 100) * barWidth;
     const actualWidth =
       index === validLangs.length - 1 ? barWidth - currentX : width;
-    segments.push({ x: currentX, width: actualWidth, color: lang.color });
+    segments.push({ x: currentX, width: actualWidth, color: langColor });
     currentX += actualWidth;
   }
 
@@ -454,13 +459,14 @@ function renderLanguagesCard(
   let rightLangsSvg = "";
   for (let i = 0; i < topLangs.length; i++) {
     const lang = topLangs[i];
+    const langColor = getLanguageColor(lang.color, theme);
     const colIndex = Math.floor(i / 2);
     const y = colIndex * 27;
     const escapedName = escapeHtml(lang.name);
     const pct = lang.percentage.toFixed(1);
     if (i % 2 === 0) {
       leftLangsSvg += `<g transform="translate(0, ${y})"><circle cx="6" cy="7" r="5" fill="${
-        lang.color
+        langColor
       }"/><text x="20" y="11" font-size="12" font-weight="500" fill="${
         theme.text
       }" font-family="${FONT_FAMILY}" letter-spacing="0.3">${escapedName}</text><text x="155" y="11" font-size="12" fill="${
@@ -468,7 +474,7 @@ function renderLanguagesCard(
       }" font-family="${FONT_FAMILY}" text-anchor="end" letter-spacing="0.2">${pct}%</text></g>`;
     } else {
       rightLangsSvg += `<g transform="translate(175, ${y})"><circle cx="6" cy="7" r="5" fill="${
-        lang.color
+        langColor
       }"/><text x="20" y="11" font-size="12" font-weight="500" fill="${
         theme.text
       }" font-family="${FONT_FAMILY}" letter-spacing="0.3">${escapedName}</text><text x="155" y="11" font-size="12" fill="${

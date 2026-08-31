@@ -44,6 +44,7 @@ const CARD_THEMES: CardThemeOption[] = [
   { id: 'github_dark', name: 'GitHub Dark', bgColor: '#0d1117', cardColor: '#161b22', accentColor: '#58a6ff', textColor: '#c9d1d9' },
   { id: 'github_light', name: 'GitHub Light', bgColor: '#f6f8fa', cardColor: '#ffffff', accentColor: '#0550ae', textColor: '#24292f' },
   { id: 'tokyonight', name: 'Tokyo Night', bgColor: '#1a1b26', cardColor: '#24283b', accentColor: '#70a5fd', textColor: '#a9b1d6' },
+  { id: 'aurora_night', name: 'Aurora Night', bgColor: '#1a1b27', cardColor: '#24283b', accentColor: '#bf91f3', textColor: '#70a5fd' },
   { id: 'dracula', name: 'Dracula', bgColor: '#282a36', cardColor: '#44475a', accentColor: '#ff79c6', textColor: '#f8f8f2' },
   { id: 'radical', name: 'Radical', bgColor: '#141321', cardColor: '#1a1b27', accentColor: '#fe428e', textColor: '#f8f8f2' },
   { id: 'synthwave', name: 'Synthwave', bgColor: '#2b213a', cardColor: '#1a1225', accentColor: '#e2571e', textColor: '#e5289e' },

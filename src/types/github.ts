@@ -106,4 +106,5 @@ export interface ThemeColors {
   accentSecondary: string;
   iconColor: string;
   contributionLevels: string[];
+  languageColorOverrides?: Record<string, string>;
 }
