@@ -85,7 +85,7 @@ export const themes: Record<string, ThemeColors> = {
     border: '#414868',
     title: '#70A5FD',
     text: '#70A5FD',
-    textSecondary: '#70A5FD',
+    textSecondary: '#8B949E',
     accent: '#BF91F3',
     accentSecondary: '#70A5FD',
     iconColor: '#7AA2F7',
