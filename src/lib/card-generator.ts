@@ -671,7 +671,7 @@ export function generateStreakCard(
     accountCreatedAt,
   } = stats;
   const width = 500;
-  const height = 160;
+  const height = 150;
   const columnCenters = [83, 250, 417];
   const circleRadius = 38;
   const strokeWidth = 5;
@@ -691,15 +691,15 @@ export function generateStreakCard(
   <g text-anchor="middle" font-family="${FONT_FAMILY}">
     <text x="${columnCenters[0]}" y="80" font-size="29" font-weight="700" fill="${theme.accentSecondary}">${totalContributionsAllTime.toLocaleString()}</text>
     <text x="${columnCenters[0]}" y="111" font-size="12" font-weight="600" fill="${theme.accentSecondary}">Total Contributions</text>
-    <text x="${columnCenters[0]}" y="139" font-size="10" fill="${dateColor}">${formatDateFull(accountCreatedAt)} - Present</text>
+    <text x="${columnCenters[0]}" y="145" font-size="10" fill="${dateColor}">${formatDateFull(accountCreatedAt)} - Present</text>
 
     <circle cx="${columnCenters[1]}" cy="70" r="${circleRadius}" fill="none" stroke="${theme.border}" stroke-width="${strokeWidth}" opacity="0.3"/>
     <circle cx="${columnCenters[1]}" cy="70" r="${circleRadius}" fill="none" stroke="${theme.accent}" stroke-width="${strokeWidth}"
       stroke-dasharray="${circumference}" stroke-dashoffset="${currentProgress}" transform="rotate(-90 ${columnCenters[1]} 70)" stroke-linecap="round"/>
-    <g transform="translate(${columnCenters[1] - 10}, 17)">${renderIcon("fire", 0, 0, theme.accent, 20)}</g>
+    <g transform="translate(${columnCenters[1] - 10}, 17)">${renderIcon("fire", 0, 0, theme.iconColor, 20)}</g>
     <text x="${columnCenters[1]}" y="79" font-size="27" font-weight="700" fill="${theme.accent}">${currentStreak.count}</text>
     <text x="${columnCenters[1]}" y="128" font-size="12" font-weight="600" fill="${theme.accent}">Current Streak</text>
-    <text x="${columnCenters[1]}" y="148" font-size="10" fill="${dateColor}">${
+    <text x="${columnCenters[1]}" y="145" font-size="10" fill="${dateColor}">${
       currentStreak.startDate
         ? formatDateRange(currentStreak.startDate, currentStreak.endDate)
         : "No active streak"
@@ -707,7 +707,7 @@ export function generateStreakCard(
 
     <text x="${columnCenters[2]}" y="80" font-size="29" font-weight="700" fill="${theme.accentSecondary}">${longestStreak.count}</text>
     <text x="${columnCenters[2]}" y="111" font-size="12" font-weight="600" fill="${theme.accentSecondary}">Longest Streak</text>
-    <text x="${columnCenters[2]}" y="139" font-size="10" fill="${dateColor}">${
+    <text x="${columnCenters[2]}" y="145" font-size="10" fill="${dateColor}">${
       longestStreak.count > 0 && longestStreak.startDate
         ? formatDateRange(longestStreak.startDate, longestStreak.endDate)
         : "No streak recorded"

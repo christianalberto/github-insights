@@ -25,7 +25,7 @@
 - 📈 **Contribution Graph** - Visual representation of your activity with monthly breakdowns
 - 🗣️ **Top Languages** - Most used programming languages with visual percentages
 - 🙈 **Language Filtering** - Hide specific languages from your stats so percentages only reflect what matters to you
-- 🎨 **Multiple Themes** - 10 beautiful card themes to choose from, including the Aurora Night style
+- 🎨 **Multiple Themes** - 11 beautiful card themes to choose from, including Aurora Night and Ember Void
 - 🔥 **Standalone Cards** - Generate compact streak cards directly from a URL with `card=streak`
 - 🌗 **Site Theme Toggle** - Switch the web UI between Light, Dark, and System mode with persistent preference
 - 📥 **Download Options** - Export your stats card as SVG, PNG, or JPG directly from the UI
@@ -82,7 +82,7 @@ Generate only the total contributions, current streak, and longest streak in a c
 </p>
 ```
 
-Add `&transparent=true` to use the same card without a background.
+Add `&transparent=true` to use the same card without a background. For the transparent orange style, use `theme=ember_void&transparent=true`.
 
 ### Hiding Specific Languages
 
@@ -107,6 +107,7 @@ You can exclude certain languages so they don't appear in the languages section 
 | `ocean` | ![Ocean](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ocean&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 | `neo_green` | ![Neo Green](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=neo_green&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 | `aurora_night` | ![Aurora Night](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=aurora_night&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `ember_void` | ![Ember Void](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ember_void&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 
 ## Self-Hosting
 

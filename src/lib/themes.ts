@@ -110,6 +110,20 @@ export const themes: Record<string, ThemeColors> = {
     },
   },
 
+  ember_void: {
+    background: '#0B0E14',
+    backgroundGradient: 'linear-gradient(135deg, #0B0E14 0%, #17131A 50%, #0B0E14 100%)',
+    cardBackground: '#0B0E14',
+    border: '#232544',
+    title: '#ECEEFB',
+    text: '#ECEEFB',
+    textSecondary: '#6F76A0',
+    accent: '#FF9E5E',
+    accentSecondary: '#ECEEFB',
+    iconColor: '#FF7A45',
+    contributionLevels: ['#0B0E14', '#232544', '#6F76A0', '#FF7A45', '#FF9E5E'],
+  },
+
   dracula: {
     background: '#282a36',
     backgroundGradient: 'linear-gradient(135deg, #282a36 0%, #44475a 50%, #282a36 100%)',
