@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="850" height="159" viewBox="0 0 850 159">
+  <defs>
+    <linearGradient id="cardBgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a192f" />
+      <stop offset="100%" style="stop-color:#112240;stop-opacity:0.92" />
+    </linearGradient>
+    <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#64ffda" />
+      <stop offset="50%" style="stop-color:#57cbff" />
+      <stop offset="100%" style="stop-color:#64ffda" />
+    </linearGradient>
+  </defs>
+  
+  <rect x="1" y="1" width="848" height="157" rx="15" fill="url(#cardBgGradient)" stroke="url(#borderGradient)" stroke-width="2"/>
+  
+  
+    <g transform="translate(0, 36)">
+      
+      <g transform="translate(425, 0)">
+        <text x="0" y="0" text-anchor="middle" font-size="28" font-weight="700" fill="#64ffda" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" letter-spacing="0.5">
+          Tom Preston-Werner
+        </text>
+        
+        <text x="0" y="30" text-anchor="middle" font-size="14" font-weight="400" fill="#8892b0" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" letter-spacing="0.3">
+          @mojombo
+        </text>
+      </g>
+  
+      
+      
+    </g>
+  
+  
+  
+  
+  
+</svg>

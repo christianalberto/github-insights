@@ -1,7 +1,9 @@
 <h1 align="center">GitHub Insights</h1>
 
 <p align="center">
-  <img src="https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true" alt="GitHub Insights" />
+  <a href="https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=true&languages=true&streak=true&stats=true&header=true&summary=true&profile=true">
+    <img src="public/profile/card.svg" alt="GitHub Insights" />
+  </a>
 </p>
 
 <p align="center">
@@ -98,16 +100,16 @@ You can exclude certain languages so they don't appear in the languages section 
 
 | Theme | Preview |
 |-------|---------|
-| `github_dark` | ![GitHub Dark](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `github_light` | ![GitHub Light](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_light&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `radical` | ![Radical](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=radical&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `tokyonight` | ![Tokyo Night](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=tokyonight&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `dracula` | ![Dracula](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=dracula&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `synthwave` | ![Synthwave](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=synthwave&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `ocean` | ![Ocean](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ocean&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `neo_green` | ![Neo Green](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=neo_green&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `aurora_night` | ![Aurora Night](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=aurora_night&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
-| `ember_void` | ![Ember Void](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ember_void&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `github_dark` | [![GitHub Dark](public/profile/github_dark.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_dark&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `github_light` | [![GitHub Light](public/profile/github_light.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=github_light&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `radical` | [![Radical](public/profile/radical.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=radical&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `tokyonight` | [![Tokyo Night](public/profile/tokyonight.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=tokyonight&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `dracula` | [![Dracula](public/profile/dracula.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=dracula&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `synthwave` | [![Synthwave](public/profile/synthwave.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=synthwave&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `ocean` | [![Ocean](public/profile/ocean.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ocean&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `neo_green` | [![Neo Green](public/profile/neo_green.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=neo_green&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `aurora_night` | [![Aurora Night](public/profile/aurora_night.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=aurora_night&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+| `ember_void` | [![Ember Void](public/profile/ember_void.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ember_void&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 
 ## Self-Hosting
 
