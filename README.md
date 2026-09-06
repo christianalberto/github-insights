@@ -242,13 +242,25 @@ In the web UI, open **Profile 3D Contribution**, pick a style, then click **Gene
    cp .env.example .env.local
    ```
 
-4. **Add your GitHub token**
-   
-   Create a [Personal Access Token](https://github.com/settings/tokens) with the following scopes:
-   - `repo` (Full control of private repositories)
-   - `read:user` (Read all user profile data)
-   
-   Add it to `.env.local`:
+4. **Add your GitHub token (classic PAT)**
+
+   Create a **Classic** [Personal Access Token](https://github.com/settings/tokens)  
+   (`Settings → Developer settings → Personal access tokens → Tokens (classic)` → **Generate new token (classic)**).
+
+   Enable these scopes:
+
+   | Scope | Required for |
+   |-------|----------------|
+   | `repo` | Full access to private repositories (stars, languages, repo counts, etc.) |
+   | `read:user` | Read user profile data |
+
+   Without `repo`, private repositories are ignored and only public data is returned.
+
+   Optional but recommended for private contribution activity on calendars/streaks: in GitHub go to  
+   **Settings → Public profile → Contributions & Activity** and enable  
+   **Include private contributions on my profile**.
+
+   Add the token to `.env.local`:
    ```
    GITHUB_TOKEN=your_token_here
    ```

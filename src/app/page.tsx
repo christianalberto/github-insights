@@ -1361,26 +1361,17 @@ export default function Home() {
           >
             
             
-            <div ref={previewSectionRef} id="preview-section" className="glass-panel" style={{ overflow: 'hidden', padding: 0 }}>
+            <div ref={previewSectionRef} id="preview-section" className="glass-panel" style={{ overflow: 'hidden', padding: 0, borderColor: 'var(--preview-header-border)' }}>
               
               
-              <div
-                style={{
-                  padding: '12px 18px',
-                  borderBottom: '1px solid var(--border-subtle)',
-                  backgroundColor: 'var(--bg-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
+              <div className="preview-stage-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ef4444', opacity: 0.8 }} />
-                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f59e0b', opacity: 0.8 }} />
-                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#10b981', opacity: 0.8 }} />
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ff5f56' }} />
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#27c93f' }} />
                   </div>
-                  <span style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                  <span className="preview-stage-filename">
                     {generatedUsername
                       ? generatorMode === 'contrib3d'
                         ? `${generatedUsername}-contrib-3d.svg`
@@ -1396,7 +1387,13 @@ export default function Home() {
                         key={fmt}
                         onClick={() => downloadImage(fmt)}
                         className="btn-secondary"
-                        style={{ fontSize: '11px', padding: '4px 8px' }}
+                        style={{
+                          fontSize: '11px',
+                          padding: '4px 8px',
+                          backgroundColor: '#3a4250',
+                          borderColor: '#4a5260',
+                          color: '#e6edf3',
+                        }}
                       >
                         <Download size={12} />
                         <span>{fmt.toUpperCase()}</span>
@@ -1407,45 +1404,34 @@ export default function Home() {
               </div>
 
               
-              <div
-                style={{
-                  padding: '28px 20px',
-                  backgroundColor: 'var(--bg-inset)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: '340px',
-                  overflow: 'auto',
-                }}
-              >
+              <div className="preview-stage card-canvas-viewer">
                 {!isMounted ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-subtle)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }} className="preview-stage-empty">
                     <RotateCw size={16} className="animate-spin" />
                     <span>Loading Studio...</span>
                   </div>
                 ) : !generatedUsername ? (
-                  <div style={{ textAlign: 'center', maxWidth: '320px', padding: '20px 0' }}>
+                  <div style={{ textAlign: 'center', maxWidth: '320px', padding: '20px 0' }} className="preview-stage-empty">
                     <div
                       style={{
                         width: '44px',
                         height: '44px',
                         borderRadius: '12px',
                         margin: '0 auto 12px',
-                        backgroundColor: 'var(--bg-card)',
-                        border: '1px solid var(--border-subtle)',
-                        color: 'var(--text-subtle)',
+                        backgroundColor: '#353c48',
+                        border: '1px solid #4a5260',
+                        color: '#a8b2bf',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: 'var(--shadow-sm)',
                       }}
                     >
                       <Activity size={22} />
                     </div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>
+                    <div className="preview-stage-empty-title" style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>
                       No Profile Selected
                     </div>
-                    <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    <p className="preview-stage-empty-desc" style={{ fontSize: '12px' }}>
                       Enter a GitHub username or select a popular profile above to render the live telemetry card.
                     </p>
                   </div>
@@ -1457,9 +1443,9 @@ export default function Home() {
                         height: '44px',
                         borderRadius: '12px',
                         margin: '0 auto 12px',
-                        backgroundColor: 'rgba(239, 68, 68, 0.12)',
-                        color: '#ef4444',
-                        border: '1px solid rgba(239, 68, 68, 0.25)',
+                        backgroundColor: 'rgba(248, 81, 73, 0.12)',
+                        color: '#f85149',
+                        border: '1px solid rgba(248, 81, 73, 0.3)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1467,11 +1453,11 @@ export default function Home() {
                     >
                       <AlertCircle size={22} />
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: 600, color: '#ef4444', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '15px', fontWeight: 600, color: '#f85149', marginBottom: '6px' }}>
                       User Not Found
                     </div>
-                    <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                      The account <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>@{generatedUsername}</strong> was not found on GitHub. Please verify the username.
+                    <p className="preview-stage-empty-desc" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+                      The account <strong style={{ color: '#e6edf3', fontFamily: 'var(--font-mono)' }}>@{generatedUsername}</strong> was not found on GitHub. Please verify the username.
                     </p>
                   </div>
                 ) : !hasLoaded || isGenerating ? (
@@ -1491,22 +1477,21 @@ export default function Home() {
                         width: '48px',
                         height: '48px',
                         borderRadius: '14px',
-                        backgroundColor: 'var(--bg-card)',
-                        border: '1px solid var(--border-option)',
+                        backgroundColor: '#353c48',
+                        border: '1px solid #4a5260',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         marginBottom: '16px',
-                        boxShadow: 'var(--shadow-md)',
                       }}
                     >
-                      <RotateCw size={22} className="animate-spin" style={{ color: 'var(--primary)' }} />
+                      <RotateCw size={22} className="animate-spin" style={{ color: '#60a5fa' }} />
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '4px' }}>
+                    <div className="preview-stage-empty-title" style={{ fontSize: '15px', fontWeight: 700, marginBottom: '4px' }}>
                       Generating Telemetry Card
                     </div>
-                    <p style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
-                      Fetching live GitHub stats for <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-main)' }}>@{generatedUsername}</span>...
+                    <p className="preview-stage-empty-desc" style={{ fontSize: '12.5px' }}>
+                      Fetching live GitHub stats for <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#e6edf3' }}>@{generatedUsername}</span>...
                     </p>
                   </div>
                 ) : (
@@ -1524,7 +1509,8 @@ export default function Home() {
                       style={{
                         maxWidth: '100%',
                         height: 'auto',
-                        boxShadow: 'var(--shadow-lg)',
+                        borderRadius: '8px',
+                        boxShadow: '0 10px 28px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.08)',
                         userSelect: 'none',
                       }}
                       onError={() => {
