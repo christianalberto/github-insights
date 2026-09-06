@@ -7,14 +7,13 @@
 </p>
 
 <p align="center">
-  <strong>Generate beautiful, customizable GitHub stats cards for your profile README</strong>
+  <strong>Generate beautiful, customizable GitHub stats cards and 3D contribution profiles for your README</strong>
 </p>
 
 <p align="center">
   <a href="https://github-profiles-insights.vercel.app">Live Demo</a> •
   <a href="#features">Features</a> •
   <a href="#usage">Usage</a> •
-  <a href="#themes">Themes</a> •
   <a href="#self-hosting">Self-Hosting</a>
 </p>
 
@@ -23,23 +22,22 @@
 ## Features
 
 - 📊 **Comprehensive Stats** - Commits, PRs, issues, stars, and more
-- 🔥 **Streak Tracking** - Current and longest contribution streaks with accurate consecutive day detection
-- 📈 **Contribution Graph** - Visual representation of your activity with monthly breakdowns
-- 🗣️ **Top Languages** - Most used programming languages with visual percentages
-- 🙈 **Language Filtering** - Hide specific languages from your stats so percentages only reflect what matters to you
-- 🎨 **Multiple Themes** - 11 beautiful card themes to choose from, including Aurora Night and Ember Void
-- 🔥 **Standalone Cards** - Generate compact streak cards directly from a URL with `card=streak`
-- 🌗 **Site Theme Toggle** - Switch the web UI between Light, Dark, and System mode with persistent preference
-- 📥 **Download Options** - Export your stats card as SVG, PNG, or JPG directly from the UI
-- ⚡ **Fast & Optimized** - Edge runtime with intelligent caching for quick loads
-- 📱 **Responsive Design** - Looks great on any device with a fully mobile-friendly interface
-- 🔄 **Smart Regeneration UX** - The Generate button and a banner highlight automatically when your settings have changed since the last card was generated, and clear automatically if you revert to the previously generated configuration
+- 🔥 **Streak Tracking** - Current and longest contribution streaks
+- 📈 **Contribution Graph** - 31-day activity line chart card
+- 🃏 **Standalone Cards** - `insight`, `stats`, `graph`, or `streak`
+- 🧊 **Profile 3D Contribution** - 3D calendar with radar & languages (`/api/contrib-3d`)
+- 🎨 **Card Themes** - Multiple themes including Aurora Night and Ember Void
+- 🙈 **Language Filtering** - Hide specific languages from insight cards
+- 🌗 **Site Theme Toggle** - Light, Dark, and System mode
+- 📥 **Download Options** - Export as SVG, PNG, or JPG
+- ⚡ **Fast & Cached** - Smart caching for quick loads
+- 📱 **Responsive UI** - Mobile-friendly generator studio
 
 ## Usage
 
 ### Quick Start
 
-Add this to your GitHub profile README:
+**Insight card:**
 
 ```markdown
 <p align="center">
@@ -47,26 +45,50 @@ Add this to your GitHub profile README:
 </p>
 ```
 
+**3D contribution profile:**
+
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=green" alt="GitHub 3D Contribution" />
+</p>
+```
+
 Replace `YOUR_USERNAME` with your GitHub username.
 
-### Customization Options
+<details>
+<summary><strong>📊 Insight Cards</strong> — formats, themes, parameters & examples</summary>
+
+<br>
+
+### Card types
+
+| `card` | Description |
+|--------|-------------|
+| `insight` (default) | Full analytics card with modular sections |
+| `stats` | Stars, contributions, PRs, issues, contributed-to & rank |
+| `graph` | 31-day contribution line chart |
+| `streak` | Total contributions, current streak & longest streak |
+
+### Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `username` | Required | Your GitHub username |
-| `card` | `insight` | Set to `streak` for a compact streak-only card |
+| `card` | `insight` | Card type: `insight`, `stats`, `graph`, or `streak` |
 | `theme` | `github_dark` | Card theme |
-| `transparent` | `false` | Set to `true` for a transparent standalone streak card |
+| `transparent` | `false` | Transparent background (streak card only) |
 | `profile` | `true` | Show name & username |
 | `header` | `true` | Show monthly contribution chart |
 | `summary` | `true` | Show summary info (contributions, repos, join date) |
-| `stats` | `true` | Show GitHub stats (commits, PRs, issues, stars) |
+| `stats` | `true` | Show GitHub stats section |
 | `languages` | `true` | Show top programming languages |
 | `streak` | `true` | Show streak statistics |
-| `graph` | `true` | Show contribution graph |
-| `hide_langs` | _(none)_ | Comma-separated list of languages to exclude from the languages section (e.g. `HTML,CSS`). Remaining language percentages are recalculated automatically. |
+| `graph` | `true` | Show contribution graph section |
+| `hide_langs` | _(none)_ | Comma-separated languages to exclude (e.g. `HTML,CSS`) |
 
-### Example with All Options
+### Examples
+
+Full insights:
 
 ```markdown
 <p align="center">
@@ -74,9 +96,23 @@ Replace `YOUR_USERNAME` with your GitHub username.
 </p>
 ```
 
-### Standalone Streak Card
+Stats card:
 
-Generate only the total contributions, current streak, and longest streak in a compact card:
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/insight?username=YOUR_USERNAME&card=stats&theme=tokyonight" alt="GitHub Stats" />
+</p>
+```
+
+Graph card:
+
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/insight?username=YOUR_USERNAME&card=graph&theme=github_dark" alt="Contribution Graph" />
+</p>
+```
+
+Streak card:
 
 ```markdown
 <p align="center">
@@ -84,11 +120,9 @@ Generate only the total contributions, current streak, and longest streak in a c
 </p>
 ```
 
-Add `&transparent=true` to use the same card without a background. For the transparent orange style, use `theme=ember_void&transparent=true`.
+Add `&transparent=true` to the streak card for a transparent background. Example: `theme=ember_void&transparent=true`.
 
-### Hiding Specific Languages
-
-You can exclude certain languages so they don't appear in the languages section and their percentages are redistributed among the remaining ones:
+Hide languages:
 
 ```markdown
 <p align="center">
@@ -96,7 +130,7 @@ You can exclude certain languages so they don't appear in the languages section 
 </p>
 ```
 
-## Themes
+### Themes
 
 | Theme | Preview |
 |-------|---------|
@@ -110,6 +144,78 @@ You can exclude certain languages so they don't appear in the languages section 
 | `neo_green` | [![Neo Green](public/profile/neo_green.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=neo_green&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 | `aurora_night` | [![Aurora Night](public/profile/aurora_night.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=aurora_night&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 | `ember_void` | [![Ember Void](public/profile/ember_void.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ember_void&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
+
+</details>
+
+<details>
+<summary><strong>🧊 Profile 3D Contribution</strong> — styles, parameters & embed examples</summary>
+
+<br>
+
+Based on [github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib) by SATO Yoshiyuki. Generates a 3D contribution calendar with radar chart and language pie.
+
+### Endpoint
+
+```
+/api/contrib-3d?username=YOUR_USERNAME&style=green&animate=true
+```
+
+### Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `username` | Required | Your GitHub username |
+| `style` | `green` | Visual style (see table below) |
+| `animate` | `true` | Enable SVG animations |
+| `year` | _(current)_ | Optional calendar year (e.g. `2024`) |
+
+### Styles
+
+| `style` | Description |
+|---------|-------------|
+| `green` | Classic green contribution blocks |
+| `season` | Northern hemisphere seasonal colors |
+| `south-season` | Southern hemisphere seasonal colors |
+| `night-view` | Dark night city palette |
+| `night-green` | Dark background with green blocks |
+| `night-rainbow` | Animated rainbow contribution blocks |
+| `gitblock` | Pixel-pattern block style |
+
+### Examples
+
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=green" alt="3D Green" />
+</p>
+```
+
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=season" alt="3D Season" />
+</p>
+```
+
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=night-view" alt="3D Night View" />
+</p>
+```
+
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=night-rainbow&animate=true" alt="3D Night Rainbow" />
+</p>
+```
+
+```markdown
+<p align="center">
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=gitblock" alt="3D Git Block" />
+</p>
+```
+
+In the web UI, open **Profile 3D Contribution**, pick a style, then click **Generate**.
+
+</details>
 
 ## Self-Hosting
 
@@ -166,17 +272,15 @@ You can exclude certain languages so they don't appear in the languages section 
 
 **Important:** Add the `GITHUB_TOKEN` environment variable in your Vercel project settings.
 
-
 ## Tech Stack
 
 - **Framework:** Next.js 16 with App Router
-- **Runtime:** Edge Runtime for optimal performance
-- **Language:** TypeScript for type safety
-- **Styling:** Inline SVG with dynamic theming
-- **Font:** Inter for consistent cross-platform rendering
+- **Runtime:** Node.js API routes (3D contrib) + SVG generators
+- **Language:** TypeScript
+- **3D engine:** d3 + jsdom (ported from github-profile-3d-contrib)
 - **API:** GitHub GraphQL API v4
 - **Image Export:** Canvas API for PNG/JPG conversion
-- **Deployment:** Vercel with automatic edge caching
+- **Deployment:** Vercel
 
 ## Contributing
 
@@ -190,7 +294,13 @@ Contributions are welcome! Feel free to:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License. Copyright holders:
+
+- **SATO, Yoshiyuki** — [github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib)
+- **NISHAT MAHMUD** — original GitHub Insights
+- **Christian Alberto** — current maintainer & integrations
+
+See the [LICENSE](LICENSE) file for details.
 
 ---
 

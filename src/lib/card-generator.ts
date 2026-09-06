@@ -328,6 +328,9 @@ function renderStatsCard(
     stats;
   const { grade, color: gradeBaseColor } = calculateGrade(stats);
   const gradeColor = getIconColor(gradeBaseColor, theme);
+  const rankCircumference = 2 * Math.PI * 40;
+  const rankProgress = Math.min(Math.max(stats.rankPercentile / 100, 0.08), 1);
+  const rankOffset = rankCircumference * (1 - rankProgress);
 
   const statItems = [
     {
@@ -394,10 +397,12 @@ function renderStatsCard(
   }" font-family="${FONT_FAMILY}" letter-spacing="0.3">GitHub Stats</text></g>
       <g transform="translate(24, 60)">${statsSvgParts.join("")}</g>
       <g transform="translate(290, 58)">
-        <circle cx="36" cy="36" r="40" fill="${
-          theme.background
-        }" stroke="${gradeColor}" stroke-width="2.5"/>
-        <circle cx="36" cy="36" r="32" fill="${gradeColor}" opacity="0.12"/>
+        <circle cx="36" cy="36" r="40" fill="none" stroke="${
+          theme.border
+        }" stroke-width="3.5" opacity="0.35"/>
+        <circle cx="36" cy="36" r="40" fill="none" stroke="${gradeColor}" stroke-width="3.5"
+          stroke-dasharray="${rankCircumference}" stroke-dashoffset="${rankOffset}"
+          transform="rotate(-90 36 36)" stroke-linecap="round"/>
         <text x="36" y="44" text-anchor="middle" font-size="26" font-weight="700" fill="${gradeColor}" font-family="${FONT_FAMILY}" letter-spacing="0.5">${grade}</text>
       </g>
       <g transform="translate(296, 146)">
@@ -718,6 +723,157 @@ export function generateStreakCard(
         : "No streak recorded"
     }</text>
   </g>
+</svg>
+  `.trim();
+}
+
+export function generateStatsCard(
+  stats: GitHubStats,
+  theme: ThemeColors
+): string {
+  const width = 377;
+  const height = 200;
+  const { svg } = renderStatsCard(stats, theme, 0, 0);
+
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  ${svg}
+</svg>
+  `.trim();
+}
+
+function buildSmoothLinePath(points: { x: number; y: number }[]): string {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+  if (points.length === 2) {
+    return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+  }
+
+  let path = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i === 0 ? 0 : i - 1];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] ?? p2;
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+    path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+  }
+  return path;
+}
+
+function getNiceMax(value: number): number {
+  if (value <= 0) return 4;
+  const padded = Math.ceil(value * 1.05);
+  const magnitude = Math.pow(10, Math.floor(Math.log10(padded)));
+  const normalized = padded / magnitude;
+  const nice =
+    normalized <= 1 ? 1 :
+    normalized <= 2 ? 2 :
+    normalized <= 4 ? 4 :
+    normalized <= 5 ? 5 :
+    normalized <= 8 ? 8 : 10;
+  return nice * magnitude;
+}
+
+export function generateGraphCard(
+  stats: GitHubStats,
+  theme: ThemeColors
+): string {
+  const width = 850;
+  const height = 380;
+  const padding = {
+    top: 56,
+    right: 36,
+    bottom: 58,
+    left: 72,
+  };
+  const graphWidth = width - padding.left - padding.right;
+  const graphHeight = height - padding.top - padding.bottom;
+
+  const rawName = stats.user.name?.trim() || "";
+  const login = stats.user.login.trim();
+  const displayName = escapeHtml(rawName || login);
+  const title = `${displayName}'s Contribution Graph`;
+
+  const contributionData = stats.contributionData || [];
+  const last31Days = contributionData.slice(-31);
+
+  if (last31Days.length === 0) {
+    return `
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <rect x="0" y="0" width="${width}" height="${height}" rx="12" fill="${theme.cardBackground}" stroke="${theme.border}" stroke-width="1"/>
+  <text x="${width / 2}" y="40" text-anchor="middle" font-size="18" font-weight="600" fill="${theme.title}" font-family="${FONT_FAMILY}">${title}</text>
+  <text x="${width / 2}" y="${height / 2}" text-anchor="middle" font-size="14" fill="${theme.textSecondary}" font-family="${FONT_FAMILY}">No contribution data available</text>
+</svg>
+    `.trim();
+  }
+
+  let maxCount = 0;
+  for (const day of last31Days) {
+    if (day.contributionCount > maxCount) maxCount = day.contributionCount;
+  }
+  const yMax = getNiceMax(maxCount);
+  const yTickCount = 7;
+  const yStep = yMax / (yTickCount - 1);
+
+  const lineColor = theme.title;
+  const pointColor = theme.accent;
+  const gridColor = theme.border;
+  const labelColor = theme.textSecondary;
+
+  const points = last31Days.map((day, i) => {
+    const x =
+      last31Days.length === 1
+        ? graphWidth / 2
+        : (i / (last31Days.length - 1)) * graphWidth;
+    const y = graphHeight - (day.contributionCount / yMax) * graphHeight;
+    return { x, y, count: day.contributionCount, date: day.date };
+  });
+
+  const linePath = buildSmoothLinePath(points);
+
+  let yGridSvg = "";
+  let yLabelsSvg = "";
+  for (let i = 0; i < yTickCount; i++) {
+    const value = Math.round(i * yStep);
+    const y = graphHeight - (value / yMax) * graphHeight;
+    yGridSvg += `<line x1="0" y1="${y}" x2="${graphWidth}" y2="${y}" stroke="${gridColor}" stroke-width="1" stroke-dasharray="3,4" opacity="0.55"/>`;
+    yLabelsSvg += `<text x="-12" y="${y + 4}" text-anchor="end" font-size="11" fill="${labelColor}" font-family="${FONT_FAMILY}">${value}</text>`;
+  }
+
+  let xGridSvg = "";
+  let xLabelsSvg = "";
+  for (let i = 0; i < points.length; i++) {
+    const point = points[i];
+    const dayNum = new Date(point.date).getDate();
+    xGridSvg += `<line x1="${point.x}" y1="0" x2="${point.x}" y2="${graphHeight}" stroke="${gridColor}" stroke-width="1" stroke-dasharray="3,4" opacity="0.35"/>`;
+    xLabelsSvg += `<text x="${point.x}" y="18" text-anchor="middle" font-size="10" fill="${labelColor}" font-family="${FONT_FAMILY}">${dayNum}</text>`;
+  }
+
+  const pointsSvg = points
+    .map(
+      (p) =>
+        `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="${pointColor}" stroke="${theme.cardBackground}" stroke-width="1.5"/>`
+    )
+    .join("");
+
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <rect x="0" y="0" width="${width}" height="${height}" rx="12" fill="${theme.cardBackground}" stroke="${theme.border}" stroke-width="1"/>
+  <text x="${width / 2}" y="34" text-anchor="middle" font-size="18" font-weight="600" fill="${theme.title}" font-family="${FONT_FAMILY}" letter-spacing="0.2">${title}</text>
+  <text transform="translate(22, ${padding.top + graphHeight / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="${labelColor}" font-family="${FONT_FAMILY}">Contributions</text>
+  <g transform="translate(${padding.left}, ${padding.top})">
+    ${yGridSvg}
+    ${xGridSvg}
+    ${yLabelsSvg}
+    <path d="${linePath}" fill="none" stroke="${lineColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${pointsSvg}
+    <g transform="translate(0, ${graphHeight})">${xLabelsSvg}</g>
+  </g>
+  <text x="${padding.left + graphWidth / 2}" y="${height - 16}" text-anchor="middle" font-size="12" fill="${labelColor}" font-family="${FONT_FAMILY}">Days</text>
 </svg>
   `.trim();
 }

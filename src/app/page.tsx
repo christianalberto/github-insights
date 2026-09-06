@@ -27,10 +27,16 @@ import {
   Terminal,
   History,
   Plus,
+  Box,
 } from 'lucide-react';
+import {
+  CONTRIB_3D_STYLES,
+  type Contrib3dStyleId,
+} from '@/lib/contrib-3d/styles';
 
 type SiteTheme = 'light' | 'dark' | 'system';
-type CardType = 'insight' | 'streak';
+type CardType = 'insight' | 'streak' | 'stats' | 'graph';
+type GeneratorMode = 'cards' | 'contrib3d';
 
 interface CardThemeOption {
   id: string;
@@ -55,7 +61,7 @@ const CARD_THEMES: CardThemeOption[] = [
   { id: 'neo_green', name: 'Neo Green', bgColor: '#121212', cardColor: '#181818', accentColor: '#00c875', textColor: '#a6e22e' },
 ];
 
-const DEMO_USERNAMES = ['mojombo', 'torvalds', 'karpathy', 'sindresorhus', 'gaearon', 'shadcn'];
+const DEMO_USERNAMES = ['mojombo', 'torvalds', 'karpathy', 'sindresorhus', 'gaearon', 'christianalberto'];
 const QUICK_EXCLUDE_LANGS = ['HTML', 'CSS', 'Jupyter Notebook', 'SCSS', 'Makefile'];
 
 function GitHubLogo({ size = 18 }: { size?: number }) {
@@ -70,6 +76,9 @@ export default function Home() {
   const [username, setUsername] = useState('');
   const [generatedUsername, setGeneratedUsername] = useState('');
   const [cardType, setCardType] = useState<CardType>('insight');
+  const [generatorMode, setGeneratorMode] = useState<GeneratorMode>('cards');
+  const [contrib3dStyle, setContrib3dStyle] = useState<Contrib3dStyleId>('green');
+  const [contrib3dAnimate, setContrib3dAnimate] = useState(true);
   const [transparentStreak, setTransparentStreak] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState('github_dark');
   const [showGraph, setShowGraph] = useState(true);
@@ -160,9 +169,16 @@ export default function Home() {
   }, [siteTheme, isDark, isMounted]);
 
   const hideLangsParam = hiddenLangs.length > 0 ? `&hide_langs=${encodeURIComponent(hiddenLangs.join(','))}` : '';
-  const previewUrl = cardType === 'streak'
-    ? `/api/insight?username=${generatedUsername}&card=streak&theme=${selectedTheme}${transparentStreak ? '&transparent=true' : ''}`
-    : `/api/insight?username=${generatedUsername}&theme=${selectedTheme}&graph=${showGraph}&languages=${showLanguages}&streak=${showStreak}&stats=${showStats}&header=${showHeader}&summary=${showSummary}&profile=${showProfile}${hideLangsParam}`;
+  const previewUrl =
+    generatorMode === 'contrib3d'
+      ? `/api/contrib-3d?username=${generatedUsername}&style=${contrib3dStyle}&animate=${contrib3dAnimate}`
+      : cardType === 'streak'
+        ? `/api/insight?username=${generatedUsername}&card=streak&theme=${selectedTheme}${transparentStreak ? '&transparent=true' : ''}`
+        : cardType === 'stats'
+          ? `/api/insight?username=${generatedUsername}&card=stats&theme=${selectedTheme}`
+          : cardType === 'graph'
+            ? `/api/insight?username=${generatedUsername}&card=graph&theme=${selectedTheme}`
+            : `/api/insight?username=${generatedUsername}&theme=${selectedTheme}&graph=${showGraph}&languages=${showLanguages}&streak=${showStreak}&stats=${showStats}&header=${showHeader}&summary=${showSummary}&profile=${showProfile}${hideLangsParam}`;
 
   const triggerGenerate = useCallback((targetUser: string) => {
     const trimmed = targetUser.trim();
@@ -209,7 +225,7 @@ export default function Home() {
         setHasError(true);
         setIsGenerating(false);
       });
-  }, [cardType, generatedUsername, previewUrl, selectedTheme, showGraph, showLanguages, showStreak, showStats, showHeader, showSummary, showProfile, hideLangsParam, transparentStreak]);
+  }, [cardType, generatorMode, contrib3dStyle, contrib3dAnimate, generatedUsername, previewUrl, selectedTheme, showGraph, showLanguages, showStreak, showStats, showHeader, showSummary, showProfile, hideLangsParam, transparentStreak]);
 
   const handleGenerate = () => {
     triggerGenerate(username);
@@ -262,11 +278,11 @@ export default function Home() {
   };
 
   const getMarkdownCode = () => `<p align="center">
-  <img src="${baseUrl}${previewUrl}" alt="${generatedUsername}'s GitHub Insights" />
+  <img src="${baseUrl}${previewUrl}" alt="${generatedUsername}'s ${generatorMode === 'contrib3d' ? 'GitHub 3D Contribution' : 'GitHub Insights'}" />
 </p>`;
 
   const getHtmlCode = () => `<div align="center">
-  <img src="${baseUrl}${previewUrl}" alt="${generatedUsername}'s GitHub Insights" />
+  <img src="${baseUrl}${previewUrl}" alt="${generatedUsername}'s ${generatorMode === 'contrib3d' ? 'GitHub 3D Contribution' : 'GitHub Insights'}" />
 </div>`;
 
   const getDirectUrl = () => `${baseUrl}${previewUrl}`;
@@ -295,7 +311,7 @@ export default function Home() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `github-insights-${generatedUsername}.svg`;
+        a.download = `github-${generatorMode === 'contrib3d' ? 'contrib-3d' : 'insights'}-${generatedUsername}.svg`;
         a.click();
         URL.revokeObjectURL(url);
       } else {
@@ -322,7 +338,7 @@ export default function Home() {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `github-insights-${generatedUsername}.${format}`;
+                a.download = `github-${generatorMode === 'contrib3d' ? 'contrib-3d' : 'insights'}-${generatedUsername}.${format}`;
                 a.click();
                 URL.revokeObjectURL(url);
               }
@@ -335,7 +351,7 @@ export default function Home() {
     } catch (error) {
       console.error('Download failed:', error);
     }
-  }, [generatedUsername, hasError, previewUrl, refreshKey]);
+  }, [generatedUsername, generatorMode, hasError, previewUrl, refreshKey]);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -350,10 +366,10 @@ export default function Home() {
           top: 0,
           zIndex: 50,
           backgroundColor: 'var(--header-bg)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           borderBottom: '1px solid var(--border-subtle)',
-          transition: 'background-color 0.3s ease, border-color 0.3s ease',
+          transition: 'background-color 0.2s ease, border-color 0.2s ease',
         }}
       >
         <div
@@ -496,64 +512,68 @@ export default function Home() {
       <main className="main-content" style={{ flex: 1, maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '36px 20px 60px' }}>
         
         
-        <section className="hero-container" style={{ textAlign: 'center', maxWidth: '850px', margin: '0 auto 36px' }}>
+        <section className="hero-container" style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 40px' }}>
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            style={{ marginBottom: '16px' }}
+          >
+            <span className="hero-kicker">
+              <span className="hero-kicker-dot" />
+              Open source · README ready
+            </span>
+          </motion.div>
 
           <motion.h1
             className="hero-title"
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.45, delay: 0.1 }}
             style={{
-              fontSize: 'clamp(24px, 3.8vw, 36px)',
-              fontWeight: 800,
-              letterSpacing: '-0.8px',
-              lineHeight: 1.25,
+              fontSize: 'clamp(28px, 4vw, 40px)',
+              fontWeight: 700,
+              letterSpacing: '-0.6px',
+              lineHeight: 1.2,
               marginBottom: '12px',
               color: 'var(--text-main)',
               textWrap: 'balance',
             }}
           >
-            Elegant telemetry for your{' '}
-            <span
-              style={{
-                background: 'var(--accent-gradient)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              GitHub profile
-            </span>
+            GitHub profile cards, built for README
           </motion.h1>
 
           <motion.p
             className="hero-desc"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.45, delay: 0.18 }}
             style={{
-              fontSize: '15px',
+              fontSize: '16px',
               lineHeight: 1.5,
               color: 'var(--text-muted)',
               marginBottom: '20px',
+              maxWidth: '540px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
             }}
           >
-            Live analytics and contribution cards for your README.
+            Generate insight, stats, streak, graph, and 3D contribution SVGs — then drop them into your profile.
           </motion.p>
 
           
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.26 }}
+            transition={{ duration: 0.45, delay: 0.24 }}
             style={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '8px',
+              gap: '10px',
             }}
           >
-            <span style={{ fontSize: '11px', color: 'var(--text-subtle)', fontWeight: 500, letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+            <span className="section-label">
               Try with popular profiles
             </span>
             <div
@@ -562,7 +582,7 @@ export default function Home() {
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px',
+                gap: '8px',
               }}
             >
               {DEMO_USERNAMES.map((user) => (
@@ -572,9 +592,9 @@ export default function Home() {
                   className="btn-secondary"
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '11.5px',
-                    padding: '4px 9px',
-                    borderRadius: '8px',
+                    fontSize: '12px',
+                    padding: '5px 10px',
+                    borderRadius: '6px',
                   }}
                 >
                   @{user}
@@ -609,8 +629,8 @@ export default function Home() {
                   style={{
                     padding: '6px',
                     borderRadius: '8px',
-                    backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(37, 99, 235, 0.08)',
-                    color: isDark ? '#60a5fa' : '#2563eb',
+                    backgroundColor: 'var(--brand-icon-bg)',
+                    color: 'var(--brand-icon-color)',
                     display: 'flex',
                   }}
                 >
@@ -752,8 +772,8 @@ export default function Home() {
                   style={{
                     padding: '6px',
                     borderRadius: '8px',
-                    backgroundColor: isDark ? 'rgba(96, 165, 250, 0.15)' : 'rgba(37, 99, 235, 0.08)',
-                    color: isDark ? '#60a5fa' : '#2563eb',
+                    backgroundColor: 'var(--brand-icon-bg)',
+                    color: 'var(--brand-icon-color)',
                     display: 'flex',
                   }}
                 >
@@ -766,15 +786,28 @@ export default function Home() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
                 {[
-                  { id: 'insight' as CardType, label: 'Full Insights', desc: 'Complete analytics card', icon: Sparkles },
-                  { id: 'streak' as CardType, label: 'Streak Card', desc: 'Compact streak-only card', icon: Trophy },
+                  { id: 'insight' as const, mode: 'cards' as const, label: 'Full Insights', desc: 'Complete analytics card', icon: Sparkles },
+                  { id: 'stats' as const, mode: 'cards' as const, label: 'Stats Card', desc: 'Stars, PRs, issues & rank', icon: Activity },
+                  { id: 'graph' as const, mode: 'cards' as const, label: 'Graph Card', desc: '31-day contribution chart', icon: LineChart },
+                  { id: 'streak' as const, mode: 'cards' as const, label: 'Streak Card', desc: 'Compact streak-only card', icon: Trophy },
+                  { id: 'contrib3d' as const, mode: 'contrib3d' as const, label: '3D Contribution', desc: '3D calendar, radar & languages', icon: Box },
                 ].map((option) => {
                   const Icon = option.icon;
-                  const isSelected = cardType === option.id;
+                  const isSelected =
+                    option.mode === 'contrib3d'
+                      ? generatorMode === 'contrib3d'
+                      : generatorMode === 'cards' && cardType === option.id;
                   return (
                     <button
                       key={option.id}
-                      onClick={() => setCardType(option.id)}
+                      onClick={() => {
+                        if (option.mode === 'contrib3d') {
+                          setGeneratorMode('contrib3d');
+                        } else {
+                          setGeneratorMode('cards');
+                          setCardType(option.id);
+                        }
+                      }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -788,7 +821,7 @@ export default function Home() {
                         textAlign: 'left',
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
-                        boxShadow: isSelected ? '0 0 0 1px var(--primary), 0 0 12px var(--primary-glow)' : 'none',
+                        boxShadow: isSelected ? '0 0 0 1px var(--primary)' : 'none',
                       }}
                     >
                       <Icon size={16} />
@@ -805,7 +838,7 @@ export default function Home() {
                 })}
               </div>
 
-              {cardType === 'streak' && (
+              {generatorMode === 'cards' && cardType === 'streak' && (
                 <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}>
                   <input
                     type="checkbox"
@@ -818,14 +851,15 @@ export default function Home() {
             </div>
 
             
+            {generatorMode === 'cards' ? (
             <div className="glass-panel" style={{ padding: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 <div
                   style={{
                     padding: '6px',
                     borderRadius: '8px',
-                    backgroundColor: isDark ? 'rgba(168, 85, 247, 0.15)' : 'rgba(147, 51, 234, 0.08)',
-                    color: isDark ? '#c084fc' : '#9333ea',
+                    backgroundColor: 'var(--brand-icon-bg)',
+                    color: 'var(--brand-icon-color)',
                     display: 'flex',
                   }}
                 >
@@ -848,7 +882,10 @@ export default function Home() {
                   return (
                     <button
                       key={theme.id}
-                      onClick={() => setSelectedTheme(theme.id)}
+                      onClick={() => {
+                        setGeneratorMode('cards');
+                        setSelectedTheme(theme.id);
+                      }}
                       style={{
                         padding: '10px 12px',
                         borderRadius: '12px',
@@ -858,7 +895,7 @@ export default function Home() {
                         textAlign: 'left',
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
-                        boxShadow: isSelected ? '0 0 0 1px var(--primary), 0 0 12px var(--primary-glow)' : 'none',
+                        boxShadow: isSelected ? '0 0 0 1px var(--primary)' : 'none',
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -932,8 +969,143 @@ export default function Home() {
                 })}
               </div>
             </div>
+            ) : (
+            <div className="glass-panel" style={{ padding: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                <div
+                  style={{
+                    padding: '6px',
+                    borderRadius: '8px',
+                    backgroundColor: 'var(--brand-icon-bg)',
+                    color: 'var(--brand-icon-color)',
+                    display: 'flex',
+                  }}
+                >
+                  <Box size={16} />
+                </div>
+                <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)' }}>
+                  3D Style
+                </h2>
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
+                  gap: '10px',
+                }}
+              >
+                {CONTRIB_3D_STYLES.map((style) => {
+                  const isSelected = contrib3dStyle === style.id;
+                  return (
+                    <button
+                      key={style.id}
+                      type="button"
+                      onClick={() => setContrib3dStyle(style.id)}
+                      style={{
+                        padding: '10px 12px',
+                        borderRadius: '12px',
+                        border: '1px solid',
+                        borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
+                        backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        boxShadow: isSelected
+                          ? '0 0 0 1px var(--primary)'
+                          : 'none',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '8px',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '32px',
+                            height: '18px',
+                            borderRadius: '5px',
+                            backgroundColor: style.bgColor,
+                            border: '1px solid var(--border-field)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                            padding: '0 4px',
+                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: '5px',
+                              height: '5px',
+                              borderRadius: '50%',
+                              backgroundColor: style.accentColor,
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span
+                            style={{
+                              height: '2.5px',
+                              flex: 1,
+                              borderRadius: '2px',
+                              backgroundColor: style.accentColor,
+                              opacity: 0.8,
+                            }}
+                          />
+                        </div>
+                        {isSelected && <Check size={14} style={{ color: 'var(--primary)' }} />}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          color: isSelected ? 'var(--text-main)' : 'var(--text-muted)',
+                        }}
+                      >
+                        {style.name}
+                      </div>
+                      <div
+                        style={{
+                          marginTop: '3px',
+                          fontSize: '10px',
+                          color: 'var(--text-subtle)',
+                          lineHeight: 1.35,
+                        }}
+                      >
+                        {style.description}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  marginTop: '14px',
+                  color: 'var(--text-muted)',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={contrib3dAnimate}
+                  onChange={(e) => setContrib3dAnimate(e.target.checked)}
+                />
+                Animated SVG
+              </label>
+            </div>
+            )}
 
             
+            {generatorMode === 'cards' && cardType === 'insight' && (
             <div className="glass-panel" style={{ padding: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 <div
@@ -1025,8 +1197,10 @@ export default function Home() {
                 })}
               </div>
             </div>
+            )}
 
             
+            {(generatorMode === 'cards' && cardType === 'insight') && (
             <div className="glass-panel" style={{ padding: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <div
@@ -1174,6 +1348,7 @@ export default function Home() {
                 })}
               </div>
             </div>
+            )}
 
           </motion.div>
 
@@ -1206,7 +1381,11 @@ export default function Home() {
                     <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#10b981', opacity: 0.8 }} />
                   </div>
                   <span style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                    {generatedUsername ? `${generatedUsername}-insights.svg` : 'preview.svg'}
+                    {generatedUsername
+                      ? generatorMode === 'contrib3d'
+                        ? `${generatedUsername}-contrib-3d.svg`
+                        : `${generatedUsername}-insights.svg`
+                      : 'preview.svg'}
                   </span>
                 </div>
 
@@ -1374,8 +1553,8 @@ export default function Home() {
                       style={{
                         padding: '6px',
                         borderRadius: '8px',
-                        backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(37, 99, 235, 0.08)',
-                        color: isDark ? '#60a5fa' : '#2563eb',
+                        backgroundColor: 'var(--brand-icon-bg)',
+                        color: 'var(--brand-icon-color)',
                         display: 'flex',
                       }}
                     >

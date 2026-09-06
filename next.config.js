@@ -17,6 +17,7 @@ const nextConfig = {
   allowedDevOrigins: getLocalIPs(),
   poweredByHeader: false,
   compress: true,
+  serverExternalPackages: ['jsdom', 'd3'],
   async headers() {
     return [
       {

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchGitHubStats } from '@/lib/github';
-import { generateInsightCard, generateStreakCard } from '@/lib/card-generator';
+import {
+  generateInsightCard,
+  generateStreakCard,
+  generateStatsCard,
+  generateGraphCard,
+} from '@/lib/card-generator';
 import { getTheme } from '@/lib/themes';
 
 function generateETag(content: string): string {
@@ -54,6 +59,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const isStandaloneCard =
+    cardType === 'streak' || cardType === 'stats' || cardType === 'graph';
+
   const hasAtLeastOneTelemetry =
     showGraph ||
     showLanguages ||
@@ -63,7 +71,7 @@ export async function GET(request: NextRequest) {
     showSummary ||
     showProfile;
 
-  if (!hasAtLeastOneTelemetry && cardType !== 'streak') {
+  if (!hasAtLeastOneTelemetry && !isStandaloneCard) {
     return new NextResponse(
       generateErrorCard('At least one telemetry module must be enabled', getTheme(themeName)),
       {
@@ -80,19 +88,26 @@ export async function GET(request: NextRequest) {
   try {
     const stats = await fetchGitHubStats(username, hiddenLanguages);
     const theme = getTheme(themeName);
-    
-    const svg = cardType === 'streak'
-      ? generateStreakCard(stats, theme, { transparent })
-      : generateInsightCard(stats, {
-          theme,
-          showGraph,
-          showLanguages,
-          showStreak,
-          showStats,
-          showHeader,
-          showSummary,
-          showProfile,
-        });
+
+    let svg: string;
+    if (cardType === 'streak') {
+      svg = generateStreakCard(stats, theme, { transparent });
+    } else if (cardType === 'stats') {
+      svg = generateStatsCard(stats, theme);
+    } else if (cardType === 'graph') {
+      svg = generateGraphCard(stats, theme);
+    } else {
+      svg = generateInsightCard(stats, {
+        theme,
+        showGraph,
+        showLanguages,
+        showStreak,
+        showStats,
+        showHeader,
+        showSummary,
+        showProfile,
+      });
+    }
 
     const etag = generateETag(svg);
     const ifNoneMatch = request.headers.get('if-none-match');
