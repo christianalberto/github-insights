@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Sparkles,
@@ -98,9 +98,12 @@ export default function Home() {
   const [refreshKey, setRefreshKey] = useState(Date.now());
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [siteTheme, setSiteTheme] = useState<SiteTheme>('system');
-  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(false);
+  const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
+  const [generateNonce, setGenerateNonce] = useState(0);
+  const [siteTheme, setSiteTheme] = useState<SiteTheme>('dark');
+  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(true);
 
   const usernameInputRef = useRef<HTMLInputElement>(null);
   const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -117,7 +120,7 @@ export default function Home() {
       const handleThemeChange = (e: MediaQueryListEvent) => {
         setSystemPrefersDark(e.matches);
         const currentSaved = localStorage.getItem('site-theme') as SiteTheme | null;
-        const currentMode = currentSaved && ['light', 'dark', 'system'].includes(currentSaved) ? currentSaved : 'system';
+        const currentMode = currentSaved && ['light', 'dark', 'system'].includes(currentSaved) ? currentSaved : 'dark';
         if (currentMode === 'system') {
           setSelectedTheme((prev) => {
             if (prev === 'github_dark' && !e.matches) return 'github_light';
@@ -129,9 +132,11 @@ export default function Home() {
       mql.addEventListener('change', handleThemeChange);
 
       const savedTheme = localStorage.getItem('site-theme') as SiteTheme | null;
-      const activeSiteTheme = savedTheme && ['light', 'dark', 'system'].includes(savedTheme) ? savedTheme : 'system';
+      const activeSiteTheme = savedTheme && ['light', 'dark', 'system'].includes(savedTheme) ? savedTheme : 'dark';
       if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
         setSiteTheme(savedTheme);
+      } else {
+        setSiteTheme('dark');
       }
 
       const isSystemDark = mql.matches;
@@ -169,26 +174,155 @@ export default function Home() {
   }, [siteTheme, isDark, isMounted]);
 
   const hideLangsParam = hiddenLangs.length > 0 ? `&hide_langs=${encodeURIComponent(hiddenLangs.join(','))}` : '';
+  const encodedUsername = encodeURIComponent(generatedUsername);
   const previewUrl =
     generatorMode === 'contrib3d'
-      ? `/api/contrib-3d?username=${generatedUsername}&style=${contrib3dStyle}&animate=${contrib3dAnimate}`
+      ? `/api/contrib-3d?username=${encodedUsername}&style=${contrib3dStyle}&animate=${contrib3dAnimate}`
       : cardType === 'streak'
-        ? `/api/insight?username=${generatedUsername}&card=streak&theme=${selectedTheme}${transparentStreak ? '&transparent=true' : ''}`
+        ? `/api/insight?username=${encodedUsername}&card=streak&theme=${selectedTheme}${transparentStreak ? '&transparent=true' : ''}`
         : cardType === 'stats'
-          ? `/api/insight?username=${generatedUsername}&card=stats&theme=${selectedTheme}`
+          ? `/api/insight?username=${encodedUsername}&card=stats&theme=${selectedTheme}`
           : cardType === 'graph'
-            ? `/api/insight?username=${generatedUsername}&card=graph&theme=${selectedTheme}`
-            : `/api/insight?username=${generatedUsername}&theme=${selectedTheme}&graph=${showGraph}&languages=${showLanguages}&streak=${showStreak}&stats=${showStats}&header=${showHeader}&summary=${showSummary}&profile=${showProfile}${hideLangsParam}`;
+            ? `/api/insight?username=${encodedUsername}&card=graph&theme=${selectedTheme}`
+            : `/api/insight?username=${encodedUsername}&theme=${selectedTheme}&graph=${showGraph}&languages=${showLanguages}&streak=${showStreak}&stats=${showStats}&header=${showHeader}&summary=${showSummary}&profile=${showProfile}${hideLangsParam}`;
+
+  const previewConfigKey = useMemo(
+    () =>
+      [
+        generatorMode,
+        cardType,
+        contrib3dStyle,
+        String(contrib3dAnimate),
+        selectedTheme,
+        String(transparentStreak),
+        String(showGraph),
+        String(showLanguages),
+        String(showStreak),
+        String(showStats),
+        String(showHeader),
+        String(showSummary),
+        String(showProfile),
+        hideLangsParam,
+      ].join('|'),
+    [
+      generatorMode,
+      cardType,
+      contrib3dStyle,
+      contrib3dAnimate,
+      selectedTheme,
+      transparentStreak,
+      showGraph,
+      showLanguages,
+      showStreak,
+      showStats,
+      showHeader,
+      showSummary,
+      showProfile,
+      hideLangsParam,
+    ]
+  );
+
+  const extractPreviewError = async (response: Response): Promise<string> => {
+    const headerError = response.headers.get('X-Preview-Error');
+    if (headerError) return headerError;
+
+    try {
+      const text = await response.text();
+      const matches = [...text.matchAll(/<text[^>]*>([^<]*)<\/text>/gi)].map((m) =>
+        m[1].replace(/\s+/g, ' ').trim()
+      );
+      const detail = matches.find((m) => m && m.toLowerCase() !== 'error');
+      if (detail) return detail;
+    } catch {
+      // ignore parse failures
+    }
+
+    if (response.status === 404) return 'User not found on GitHub';
+    if (response.status >= 500) return 'Server error while generating preview';
+    return `Failed to generate preview (${response.status})`;
+  };
+
+  useEffect(() => {
+    if (!generatedUsername) return;
+
+    const controller = new AbortController();
+    const requestKey = Date.now();
+    let objectUrl: string | null = null;
+
+    setIsGenerating(true);
+    setHasError(false);
+    setErrorMessage(null);
+    setHasLoaded(false);
+    setRefreshKey(requestKey);
+    setPreviewObjectUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+
+    const url = `${previewUrl}&_t=${requestKey}`;
+
+    fetch(url, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) {
+          const message = await extractPreviewError(response);
+          setErrorMessage(message);
+          setHasError(true);
+          setIsGenerating(false);
+          setHasLoaded(false);
+          return;
+        }
+
+        const blob = await response.blob();
+        if (controller.signal.aborted) return;
+
+        objectUrl = URL.createObjectURL(blob);
+        setPreviewObjectUrl(objectUrl);
+        setHasLoaded(true);
+        setIsGenerating(false);
+        setHasError(false);
+        setErrorMessage(null);
+
+        setRecentSearches((prev) => {
+          const updated = [
+            generatedUsername,
+            ...prev.filter((u) => u.toLowerCase() !== generatedUsername.toLowerCase()),
+          ].slice(0, 10);
+          try {
+            localStorage.setItem('github_insights_recent_searches', JSON.stringify(updated));
+          } catch (e) {}
+          return updated;
+        });
+      })
+      .catch((err) => {
+        if (controller.signal.aborted) return;
+        setErrorMessage(err instanceof Error ? err.message : 'Failed to generate preview');
+        setHasError(true);
+        setIsGenerating(false);
+        setHasLoaded(false);
+      });
+
+    return () => {
+      controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+    // previewUrl already reflects generatedUsername + config
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [generatedUsername, previewConfigKey, generateNonce]);
+
+  const beginPreviewReload = useCallback(() => {
+    if (!generatedUsername) return;
+    setIsGenerating(true);
+    setHasLoaded(false);
+    setHasError(false);
+    setErrorMessage(null);
+  }, [generatedUsername]);
 
   const triggerGenerate = useCallback((targetUser: string) => {
     const trimmed = targetUser.trim();
     if (!trimmed) return;
 
-    setIsGenerating(true);
-    setHasError(false);
-    setHasLoaded(false);
     setGeneratedUsername(trimmed);
-    setRefreshKey(Date.now());
+    setGenerateNonce((n) => n + 1);
 
     if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
       setTimeout(() => {
@@ -200,32 +334,7 @@ export default function Home() {
         }
       }, 120);
     }
-
-    const checkUrl = `${previewUrl.replace(`username=${generatedUsername}`, `username=${trimmed}`)}&_t=${Date.now()}`;
-    
-    fetch(checkUrl)
-      .then((response) => {
-        if (response.ok) {
-          setHasLoaded(true);
-          setIsGenerating(false);
-
-          setRecentSearches((prev) => {
-            const updated = [trimmed, ...prev.filter((u) => u.toLowerCase() !== trimmed.toLowerCase())].slice(0, 10);
-            try {
-              localStorage.setItem('github_insights_recent_searches', JSON.stringify(updated));
-            } catch (e) {}
-            return updated;
-          });
-        } else {
-          setHasError(true);
-          setIsGenerating(false);
-        }
-      })
-      .catch(() => {
-        setHasError(true);
-        setIsGenerating(false);
-      });
-  }, [cardType, generatorMode, contrib3dStyle, contrib3dAnimate, generatedUsername, previewUrl, selectedTheme, showGraph, showLanguages, showStreak, showStats, showHeader, showSummary, showProfile, hideLangsParam, transparentStreak]);
+  }, []);
 
   const handleGenerate = () => {
     triggerGenerate(username);
@@ -274,6 +383,7 @@ export default function Home() {
     if (!checked && activeModulesCount <= 1) {
       return;
     }
+    beginPreviewReload();
     setter(checked);
   };
 
@@ -801,6 +911,7 @@ export default function Home() {
                     <button
                       key={option.id}
                       onClick={() => {
+                        beginPreviewReload();
                         if (option.mode === 'contrib3d') {
                           setGeneratorMode('contrib3d');
                         } else {
@@ -843,7 +954,10 @@ export default function Home() {
                   <input
                     type="checkbox"
                     checked={transparentStreak}
-                    onChange={(e) => setTransparentStreak(e.target.checked)}
+                    onChange={(e) => {
+                      beginPreviewReload();
+                      setTransparentStreak(e.target.checked);
+                    }}
                   />
                   Transparent background
                 </label>
@@ -883,6 +997,7 @@ export default function Home() {
                     <button
                       key={theme.id}
                       onClick={() => {
+                        beginPreviewReload();
                         setGeneratorMode('cards');
                         setSelectedTheme(theme.id);
                       }}
@@ -1001,7 +1116,10 @@ export default function Home() {
                     <button
                       key={style.id}
                       type="button"
-                      onClick={() => setContrib3dStyle(style.id)}
+                      onClick={() => {
+                        beginPreviewReload();
+                        setContrib3dStyle(style.id);
+                      }}
                       style={{
                         padding: '10px 12px',
                         borderRadius: '12px',
@@ -1097,7 +1215,10 @@ export default function Home() {
                 <input
                   type="checkbox"
                   checked={contrib3dAnimate}
-                  onChange={(e) => setContrib3dAnimate(e.target.checked)}
+                  onChange={(e) => {
+                    beginPreviewReload();
+                    setContrib3dAnimate(e.target.checked);
+                  }}
                 />
                 Animated SVG
               </label>
@@ -1436,7 +1557,7 @@ export default function Home() {
                     </p>
                   </div>
                 ) : hasError ? (
-                  <div style={{ textAlign: 'center', padding: '36px 20px', maxWidth: '360px' }}>
+                  <div style={{ textAlign: 'center', padding: '36px 20px', maxWidth: '400px' }}>
                     <div
                       style={{
                         width: '44px',
@@ -1454,10 +1575,23 @@ export default function Home() {
                       <AlertCircle size={22} />
                     </div>
                     <div style={{ fontSize: '15px', fontWeight: 600, color: '#f85149', marginBottom: '6px' }}>
-                      User Not Found
+                      {errorMessage &&
+                      /(user .+ not found|could not resolve to a user|not found on github)/i.test(
+                        errorMessage
+                      )
+                        ? 'User Not Found'
+                        : 'Preview Failed'}
                     </div>
                     <p className="preview-stage-empty-desc" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
-                      The account <strong style={{ color: '#e6edf3', fontFamily: 'var(--font-mono)' }}>@{generatedUsername}</strong> was not found on GitHub. Please verify the username.
+                      {errorMessage || (
+                        <>
+                          Could not generate preview for{' '}
+                          <strong style={{ color: '#e6edf3', fontFamily: 'var(--font-mono)' }}>
+                            @{generatedUsername}
+                          </strong>
+                          .
+                        </>
+                      )}
                     </p>
                   </div>
                 ) : !hasLoaded || isGenerating ? (
@@ -1488,20 +1622,30 @@ export default function Home() {
                       <RotateCw size={22} className="animate-spin" style={{ color: '#60a5fa' }} />
                     </div>
                     <div className="preview-stage-empty-title" style={{ fontSize: '15px', fontWeight: 700, marginBottom: '4px' }}>
-                      Generating Telemetry Card
+                      {generatorMode === 'contrib3d'
+                        ? 'Generating 3D Contribution'
+                        : cardType === 'stats'
+                          ? 'Generating Stats Card'
+                          : cardType === 'graph'
+                            ? 'Generating Graph Card'
+                            : cardType === 'streak'
+                              ? 'Generating Streak Card'
+                              : 'Generating Telemetry Card'}
                     </div>
                     <p className="preview-stage-empty-desc" style={{ fontSize: '12.5px' }}>
-                      Fetching live GitHub stats for <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#e6edf3' }}>@{generatedUsername}</span>...
+                      Fetching live GitHub data for <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#e6edf3' }}>@{generatedUsername}</span>...
+                      <br />
+                      <span style={{ opacity: 0.8 }}>This can take a few seconds the first time.</span>
                     </p>
                   </div>
-                ) : (
+                ) : previewObjectUrl ? (
                   <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <motion.img
-                      key={refreshKey}
+                      key={previewObjectUrl}
                       initial={{ opacity: 0, scale: 0.98 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.35, ease: 'easeOut' }}
-                      src={`${previewUrl}&_t=${refreshKey}`}
+                      src={previewObjectUrl}
                       alt="GitHub Insights Card Preview"
                       draggable={false}
                       onDragStart={(e) => e.preventDefault()}
@@ -1517,10 +1661,11 @@ export default function Home() {
                         setIsGenerating(false);
                         setHasError(true);
                         setHasLoaded(false);
+                        setErrorMessage((prev) => prev || 'Failed to render preview image');
                       }}
                     />
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 

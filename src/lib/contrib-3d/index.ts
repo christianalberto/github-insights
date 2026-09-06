@@ -1,6 +1,5 @@
 import { aggregateUserInfo } from './aggregate-user-info';
 import * as template from './color-template';
-import { createSvg } from './create-svg';
 import { fetchData } from './github-graphql';
 import type { Settings } from './type';
 import type { Contrib3dStyleId } from './styles';
@@ -45,20 +44,37 @@ export async function generateContrib3dSvg(
     throw new Error('GITHUB_TOKEN is not configured');
   }
 
+  const login = username.trim().replace(/^@/, '');
+  if (!login) {
+    throw new Error('Username is required');
+  }
+
   const maxRepos = options.maxRepos ?? 100;
   const year = options.year ?? null;
   const animate = options.animate ?? true;
 
-  const response = await fetchData(token, username, maxRepos, year);
+  const response = await fetchData(token, login, maxRepos, year);
+
+  if (response.errors?.length && !response.data?.user) {
+    const gqlMessage = response.errors[0]?.message || 'GitHub GraphQL error';
+    if (/could not resolve to a user/i.test(gqlMessage)) {
+      throw new Error(`User "${login}" not found`);
+    }
+    throw new Error(gqlMessage);
+  }
 
   if (!response.data?.user) {
-    const message =
-      response.errors?.[0]?.message || `User "${username}" not found`;
-    throw new Error(message);
+    throw new Error(`User "${login}" not found`);
   }
 
   const userInfo = aggregateUserInfo(response);
   const settings = resolveSettings(style, userInfo.isHalloween);
 
-  return createSvg(userInfo, settings, animate);
+  // Lazy-load jsdom/d3 path so route bootstrapping stays light
+  const { createSvg } = await import('./create-svg');
+  const svg = createSvg(userInfo, settings, animate);
+  if (!svg || !svg.includes('<svg')) {
+    throw new Error('3D SVG renderer returned an empty result');
+  }
+  return svg;
 }

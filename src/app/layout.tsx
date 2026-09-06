@@ -44,7 +44,7 @@ export default function RootLayout({
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var d=document.documentElement;var t=localStorage.getItem('site-theme')||'system';var isDark=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);d.setAttribute('data-theme',isDark?'dark':'light');d.style.colorScheme=isDark?'dark':'light';}catch(e){}})();`,
+            __html: `(function(){try{var d=document.documentElement;var t=localStorage.getItem('site-theme')||'dark';var isDark=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);d.setAttribute('data-theme',isDark?'dark':'light');d.style.colorScheme=isDark?'dark':'light';}catch(e){d.setAttribute('data-theme','dark');d.style.colorScheme='dark';}})();`,
           }}
         />
         {children}

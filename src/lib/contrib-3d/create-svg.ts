@@ -233,5 +233,5 @@ export const createSvg = (
             .text(period)
             .attr('class', 'fill-weak');
     }
-    return container.html();
+    return (svg.node() as SVGSVGElement | null)?.outerHTML ?? container.html();
 };

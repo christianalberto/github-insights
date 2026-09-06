@@ -83,11 +83,20 @@ async function postGraphQL<T>(
     body: JSON.stringify({ query, variables }),
   });
 
+  const payload = (await response.json().catch(() => null)) as T & {
+    message?: string;
+    errors?: Array<{ message: string }>;
+  };
+
   if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    const detail =
+      payload?.message ||
+      payload?.errors?.[0]?.message ||
+      `${response.status} ${response.statusText}`;
+    throw new Error(`GitHub API error: ${detail}`);
   }
 
-  return response.json() as Promise<T>;
+  return payload as T;
 }
 
 export const fetchFirst = async (

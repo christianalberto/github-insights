@@ -148,74 +148,161 @@ Hide languages:
 </details>
 
 <details>
-<summary><strong>🧊 Profile 3D Contribution</strong> — styles, parameters & embed examples</summary>
+<summary><strong>🧊 Profile 3D Contribution</strong> — overview, styles, parameters & examples</summary>
 
 <br>
 
-Based on [github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib) by SATO Yoshiyuki. Generates a 3D contribution calendar with radar chart and language pie.
+![3D Contribution demo](docs/demo/profile-gitblock.svg)
+
+Based on [github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib) by **SATO Yoshiyuki**.  
+This endpoint generates a **3D contribution calendar** plus radar chart and language pie — the same visual styles as the original Action, served live as SVG from our API (no workflow commit required).
+
+### Overview
+
+Use it two ways:
+
+1. **Live embed** — point an `<img>` at `/api/contrib-3d` (updates when GitHub data changes; subject to caching).
+2. **Studio UI** — open the site, choose **3D Contribution**, pick a style, then **Generate** / download SVG·PNG·JPG.
+
+> [!NOTE]
+> To include private contributions on the calendar, enable **Include private contributions on my profile** in GitHub → **Settings** → **Public profile** → **Contributions & Activity**.  
+> Self-hosted instances also need a classic PAT with `repo` + `read:user` (see [Self-Hosting](#self-hosting)).
 
 ### Endpoint
 
 ```
-/api/contrib-3d?username=YOUR_USERNAME&style=green&animate=true
+https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=green&animate=true
 ```
 
 ### Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `username` | Required | Your GitHub username |
-| `style` | `green` | Visual style (see table below) |
-| `animate` | `true` | Enable SVG animations |
-| `year` | _(current)_ | Optional calendar year (e.g. `2024`) |
+| `username` | **Required** | GitHub username |
+| `style` | `green` | Visual style (see demos below) |
+| `animate` | `true` | Enable growing SVG animations (`false` for a static file) |
+| `year` | _(rolling year)_ | Optional calendar year, e.g. `2024` (past calendars) |
 
-### Styles
+### Styles & demos
 
-| `style` | Description |
-|---------|-------------|
-| `green` | Classic green contribution blocks |
-| `season` | Northern hemisphere seasonal colors |
-| `south-season` | Southern hemisphere seasonal colors |
-| `night-view` | Dark night city palette |
-| `night-green` | Dark background with green blocks |
-| `night-rainbow` | Animated rainbow contribution blocks |
-| `gitblock` | Pixel-pattern block style |
+Generated images match the original Action’s theme set:
 
-### Examples
+| `style` | Description | Demo file |
+|---------|-------------|-----------|
+| `green` | Classic green contribution blocks | `profile-green(-animate).svg` |
+| `season` | Northern hemisphere seasonal colors | `profile-season(-animate).svg` |
+| `south-season` | Southern hemisphere seasonal colors | `profile-south-season(-animate).svg` |
+| `night-view` | Dark night / city palette | `profile-night-view.svg` |
+| `night-green` | Dark background with green blocks | `profile-night-green.svg` |
+| `night-rainbow` | Rainbow contribution blocks | `profile-night-rainbow.svg` |
+| `gitblock` | Pixel-pattern block style | `profile-gitblock.svg` |
 
-```markdown
-<p align="center">
-  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=green" alt="3D Green" />
-</p>
-```
+#### Example: green version
+
+![green animate](docs/demo/profile-green-animate.svg)
 
 ```markdown
 <p align="center">
-  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=season" alt="3D Season" />
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=green&animate=true" alt="3D Green" />
 </p>
 ```
+
+Static (no animation):
 
 ```markdown
-<p align="center">
-  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=night-view" alt="3D Night View" />
-</p>
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=green&animate=false" alt="3D Green" />
 ```
+
+#### Example: season version (Northern Hemisphere)
+
+![season animate](docs/demo/profile-season-animate.svg)
 
 ```markdown
-<p align="center">
-  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=night-rainbow&animate=true" alt="3D Night Rainbow" />
-</p>
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=season&animate=true" alt="3D Season" />
 ```
+
+#### Example: season version (Southern Hemisphere)
+
+![south season animate](docs/demo/profile-south-season-animate.svg)
 
 ```markdown
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=south-season&animate=true" alt="3D South Season" />
+```
+
+#### Example: night view version
+
+![night view](docs/demo/profile-night-view.svg)
+
+```markdown
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=night-view" alt="3D Night View" />
+```
+
+#### Example: night green version
+
+![night green](docs/demo/profile-night-green.svg)
+
+```markdown
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=night-green" alt="3D Night Green" />
+```
+
+#### Example: night rainbow version
+
+![night rainbow](docs/demo/profile-night-rainbow.svg)
+
+```markdown
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=night-rainbow&animate=true" alt="3D Night Rainbow" />
+```
+
+#### Example: git block version
+
+![git block](docs/demo/profile-gitblock.svg)
+
+```markdown
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=gitblock" alt="3D Git Block" />
+```
+
+### Add to your profile README
+
+Same idea as the original project — drop the image into your special `username/username` profile README:
+
+```markdown
+## Contributions
+
 <p align="center">
-  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=gitblock" alt="3D Git Block" />
+  <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=green&animate=true" alt="GitHub 3D Contribution" />
 </p>
 ```
 
-In the web UI, open **Profile 3D Contribution**, pick a style, then click **Generate**.
+Or download an SVG from the studio and commit it under something like `./profile-3d-contrib/profile-green-animate.svg`, then reference the local file:
+
+```markdown
+![](./profile-3d-contrib/profile-green-animate.svg)
+```
+
+### Demo assets in this repo
+
+Preview SVGs (from the upstream project) live at:
+
+```
+docs/demo/profile-green-animate.svg
+docs/demo/profile-green.svg
+docs/demo/profile-season-animate.svg
+docs/demo/profile-season.svg
+docs/demo/profile-south-season-animate.svg
+docs/demo/profile-south-season.svg
+docs/demo/profile-night-view.svg
+docs/demo/profile-night-green.svg
+docs/demo/profile-night-rainbow.svg
+docs/demo/profile-gitblock.svg
+```
+
+### Credits
+
+3D rendering engine adapted from [yoshi389111/github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib) (MIT).  
+Original © 2021 SATO Yoshiyuki.
 
 </details>
+
 
 ## Self-Hosting
 

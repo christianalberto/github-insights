@@ -22,16 +22,28 @@ function generateETag(content: string): string {
 }
 
 function generateErrorCard(message: string): string {
+  const safe = message
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  const lines = safe.match(/.{1,70}(\s|$)/g) || [safe];
+  const textLines = lines
+    .slice(0, 3)
+    .map(
+      (line, i) =>
+        `<text x="320" y="${90 + i * 22}" text-anchor="middle" font-size="13" fill="#c9d1d9" font-family="system-ui, sans-serif">${line.trim()}</text>`
+    )
+    .join('');
+
   return `
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="160" viewBox="0 0 640 160">
-  <rect x="0" y="0" width="640" height="160" rx="12" fill="#0d1117"/>
-  <rect x="0" y="0" width="640" height="160" rx="12" fill="none" stroke="#f85149" stroke-width="2"/>
-  <text x="320" y="60" text-anchor="middle" font-size="18" font-weight="bold" fill="#f85149" font-family="system-ui, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180">
+  <rect x="0" y="0" width="640" height="180" rx="12" fill="#0d1117"/>
+  <rect x="0" y="0" width="640" height="180" rx="12" fill="none" stroke="#f85149" stroke-width="2"/>
+  <text x="320" y="48" text-anchor="middle" font-size="18" font-weight="bold" fill="#f85149" font-family="system-ui, sans-serif">
     Error
   </text>
-  <text x="320" y="95" text-anchor="middle" font-size="14" fill="#c9d1d9" font-family="system-ui, sans-serif">
-    ${message.replace(/[<>&]/g, '')}
-  </text>
+  ${textLines}
 </svg>
   `.trim();
 }
@@ -40,6 +52,7 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Expose-Headers': 'X-Preview-Error, ETag',
 };
 
 export async function GET(request: NextRequest) {
@@ -56,6 +69,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'image/svg+xml',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'X-Preview-Error': 'Username is required',
         ...corsHeaders,
       },
     });
@@ -71,6 +85,7 @@ export async function GET(request: NextRequest) {
         headers: {
           'Content-Type': 'image/svg+xml',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Preview-Error': 'Invalid style',
           ...corsHeaders,
         },
       }
@@ -83,6 +98,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'image/svg+xml',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'X-Preview-Error': 'YEAR must be a number',
         ...corsHeaders,
       },
     });
@@ -129,6 +145,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'image/svg+xml',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'X-Preview-Error': errorMessage.slice(0, 200),
         ...corsHeaders,
       },
     });

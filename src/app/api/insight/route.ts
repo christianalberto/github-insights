@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Expose-Headers': 'X-Preview-Error, ETag',
   };
 
   if (!username) {
@@ -53,6 +54,7 @@ export async function GET(request: NextRequest) {
         headers: {
           'Content-Type': 'image/svg+xml',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Preview-Error': 'Username is required',
           ...corsHeaders,
         },
       }
@@ -79,6 +81,7 @@ export async function GET(request: NextRequest) {
         headers: {
           'Content-Type': 'image/svg+xml',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Preview-Error': 'At least one telemetry module must be enabled',
           ...corsHeaders,
         },
       }
@@ -143,6 +146,7 @@ export async function GET(request: NextRequest) {
         headers: {
           'Content-Type': 'image/svg+xml',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'X-Preview-Error': errorMessage.slice(0, 200),
           ...corsHeaders,
         },
       }
