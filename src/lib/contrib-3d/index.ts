@@ -28,6 +28,8 @@ function resolveSettings(
       return template.NightRainbowSettings;
     case 'gitblock':
       return template.GitBlockSettings;
+    case 'alberto':
+      return template.AlbertoSettings;
     case 'green':
     default:
       return isHalloween ? template.HalloweenSettings : template.NormalSettings;

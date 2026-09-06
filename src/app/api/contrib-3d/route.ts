@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
   if (!isContrib3dStyleId(styleParam)) {
     return new NextResponse(
       generateErrorCard(
-        'Invalid style. Use green, season, south-season, night-view, night-green, night-rainbow, or gitblock'
+        'Invalid style. Use green, season, south-season, night-view, night-green, night-rainbow, gitblock, or alberto'
       ),
       {
         status: 400,

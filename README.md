@@ -196,6 +196,7 @@ Generated images match the original Action’s theme set:
 | `night-green` | Dark background with green blocks | `profile-night-green.svg` |
 | `night-rainbow` | Rainbow contribution blocks | `profile-night-rainbow.svg` |
 | `gitblock` | Pixel-pattern block style | `profile-gitblock.svg` |
+| `alberto` | Custom Alberto palette (blues & violet) | `profile-alberto.svg` |
 
 #### Example: green version
 
@@ -261,6 +262,16 @@ Static (no animation):
 <img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=gitblock" alt="3D Git Block" />
 ```
 
+#### Example: Alberto version
+
+Custom palette from `profile-night-view-settings.json` (blues + violet radar).
+
+![alberto](docs/demo/profile-alberto.svg)
+
+```markdown
+<img src="https://github-profiles-insights.vercel.app/api/contrib-3d?username=YOUR_USERNAME&style=alberto&animate=true" alt="3D Alberto" />
+```
+
 ### Add to your profile README
 
 Same idea as the original project — drop the image into your special `username/username` profile README:
@@ -294,6 +305,7 @@ docs/demo/profile-night-view.svg
 docs/demo/profile-night-green.svg
 docs/demo/profile-night-rainbow.svg
 docs/demo/profile-gitblock.svg
+docs/demo/profile-alberto.svg
 ```
 
 ### Credits

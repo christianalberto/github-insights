@@ -5,7 +5,8 @@ export type Contrib3dStyleId =
   | 'night-view'
   | 'night-green'
   | 'night-rainbow'
-  | 'gitblock';
+  | 'gitblock'
+  | 'alberto';
 
 export interface Contrib3dStyleOption {
   id: Contrib3dStyleId;
@@ -64,6 +65,13 @@ export const CONTRIB_3D_STYLES: Contrib3dStyleOption[] = [
     description: 'Pixel-pattern block style',
     bgColor: '#0d1117',
     accentColor: '#f78166',
+  },
+  {
+    id: 'alberto',
+    name: 'Alberto',
+    description: 'Custom blues & violet radar palette',
+    bgColor: '#1a1b27',
+    accentColor: '#7aa2f7',
   },
 ];
 
