@@ -1,7 +1,7 @@
 import { aggregateUserInfo } from './aggregate-user-info';
 import * as template from './color-template';
 import { fetchData } from './github-graphql';
-import type { Settings } from './type';
+import type { Settings, UserInfo } from './type';
 import type { Contrib3dStyleId } from './styles';
 
 export {
@@ -34,6 +34,30 @@ function resolveSettings(
     default:
       return isHalloween ? template.HalloweenSettings : template.NormalSettings;
   }
+}
+
+function applyLanguageColorRemap(
+  userInfo: UserInfo,
+  settings: Settings
+): UserInfo {
+  if (settings.type !== 'normal' || !settings.languageColorRemap) {
+    return userInfo;
+  }
+
+  const remap = new Map(
+    Object.entries(settings.languageColorRemap).map(([from, to]) => [
+      from.toLowerCase(),
+      to,
+    ])
+  );
+
+  return {
+    ...userInfo,
+    contributesLanguage: userInfo.contributesLanguage.map((lang) => {
+      const mapped = remap.get(lang.color.toLowerCase());
+      return mapped ? { ...lang, color: mapped } : lang;
+    }),
+  };
 }
 
 export async function generateContrib3dSvg(
@@ -69,7 +93,10 @@ export async function generateContrib3dSvg(
     throw new Error(`User "${login}" not found`);
   }
 
-  const userInfo = aggregateUserInfo(response);
+  const userInfo = applyLanguageColorRemap(
+    aggregateUserInfo(response),
+    resolveSettings(style, false)
+  );
   const settings = resolveSettings(style, userInfo.isHalloween);
 
   // Lazy-load jsdom/d3 path so route bootstrapping stays light

@@ -69,7 +69,7 @@ export const CONTRIB_3D_STYLES: Contrib3dStyleOption[] = [
   {
     id: 'alberto',
     name: 'Alberto',
-    description: 'Custom blues & violet radar palette',
+    description: 'Custom Alberto palette + language colors',
     bgColor: '#1a1b27',
     accentColor: '#7aa2f7',
   },

@@ -85,6 +85,9 @@ export interface NormalColorSettings extends BaseSettings {
 
     contribColors: [string, string, string, string, string];
 
+    /** Optional remap of GitHub language hex colors → themed palette */
+    languageColorRemap?: Record<string, string>;
+
     darkMode?: NormalColorSettings;
 }
 
