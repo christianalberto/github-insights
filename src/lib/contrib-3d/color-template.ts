@@ -31,4 +31,5 @@ import gitBlockSettings from './settings/GitBlockSettings.json';
 export const GitBlockSettings = gitBlockSettings as type.BitmapPatternSettings;
 
 import albertoSettings from './settings/AlbertoSettings.json';
-export const AlbertoSettings = albertoSettings as type.NormalColorSettings;
+export const AlbertoSettings =
+    albertoSettings as unknown as type.NormalColorSettings;
