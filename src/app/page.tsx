@@ -77,10 +77,10 @@ export default function Home() {
   const [generatedUsername, setGeneratedUsername] = useState('');
   const [cardType, setCardType] = useState<CardType>('insight');
   const [generatorMode, setGeneratorMode] = useState<GeneratorMode>('cards');
-  const [contrib3dStyle, setContrib3dStyle] = useState<Contrib3dStyleId>('green');
+  const [contrib3dStyle, setContrib3dStyle] = useState<Contrib3dStyleId>('alberto');
   const [contrib3dAnimate, setContrib3dAnimate] = useState(true);
   const [transparentStreak, setTransparentStreak] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState('github_dark');
+  const [selectedTheme, setSelectedTheme] = useState('aurora_night');
   const [showGraph, setShowGraph] = useState(true);
   const [showLanguages, setShowLanguages] = useState(true);
   const [showStreak, setShowStreak] = useState(true);
@@ -93,6 +93,7 @@ export default function Home() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const [activeCodeTab, setActiveCodeTab] = useState<'markdown' | 'html'>('markdown');
+  const [configPanelTab, setConfigPanelTab] = useState<'format' | 'style'>('format');
   const [baseUrl, setBaseUrl] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [refreshKey, setRefreshKey] = useState(Date.now());
@@ -123,8 +124,8 @@ export default function Home() {
         const currentMode = currentSaved && ['light', 'dark', 'system'].includes(currentSaved) ? currentSaved : 'dark';
         if (currentMode === 'system') {
           setSelectedTheme((prev) => {
-            if (prev === 'github_dark' && !e.matches) return 'github_light';
-            if (prev === 'github_light' && e.matches) return 'github_dark';
+            if ((prev === 'aurora_night' || prev === 'github_dark') && !e.matches) return 'github_light';
+            if (prev === 'github_light' && e.matches) return 'aurora_night';
             return prev;
           });
         }
@@ -141,7 +142,7 @@ export default function Home() {
 
       const isSystemDark = mql.matches;
       const effectiveDark = activeSiteTheme === 'system' ? isSystemDark : activeSiteTheme === 'dark';
-      setSelectedTheme(effectiveDark ? 'github_dark' : 'github_light');
+      setSelectedTheme(effectiveDark ? 'aurora_night' : 'github_light');
 
       try {
         const savedSearches = localStorage.getItem('github_insights_recent_searches');
@@ -364,8 +365,8 @@ export default function Home() {
     setSiteTheme(mode);
     const willBeDark = mode === 'system' ? systemPrefersDark : mode === 'dark';
     setSelectedTheme((prev) => {
-      if (prev === 'github_dark' && !willBeDark) return 'github_light';
-      if (prev === 'github_light' && willBeDark) return 'github_dark';
+      if ((prev === 'aurora_night' || prev === 'github_dark') && !willBeDark) return 'github_light';
+      if (prev === 'github_light' && willBeDark) return 'aurora_night';
       return prev;
     });
   };
@@ -646,7 +647,6 @@ export default function Home() {
               letterSpacing: '-0.6px',
               lineHeight: 1.2,
               marginBottom: '12px',
-              color: 'var(--text-main)',
               textWrap: 'balance',
             }}
           >
@@ -877,353 +877,407 @@ export default function Home() {
             </div>
 
             <div className="glass-panel" style={{ padding: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                <div
-                  style={{
-                    padding: '6px',
-                    borderRadius: '8px',
-                    backgroundColor: 'var(--brand-icon-bg)',
-                    color: 'var(--brand-icon-color)',
-                    display: 'flex',
-                  }}
-                >
-                  <FileCode size={16} />
-                </div>
-                <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)' }}>
-                  Card Format
-                </h2>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
-                {[
-                  { id: 'insight' as const, mode: 'cards' as const, label: 'Full Insights', desc: 'Complete analytics card', icon: Sparkles },
-                  { id: 'stats' as const, mode: 'cards' as const, label: 'Stats Card', desc: 'Stars, PRs, issues & rank', icon: Activity },
-                  { id: 'graph' as const, mode: 'cards' as const, label: 'Graph Card', desc: '31-day contribution chart', icon: LineChart },
-                  { id: 'streak' as const, mode: 'cards' as const, label: 'Streak Card', desc: 'Compact streak-only card', icon: Trophy },
-                  { id: 'contrib3d' as const, mode: 'contrib3d' as const, label: '3D Contribution', desc: '3D calendar, radar & languages', icon: Box },
-                ].map((option) => {
-                  const Icon = option.icon;
-                  const isSelected =
-                    option.mode === 'contrib3d'
-                      ? generatorMode === 'contrib3d'
-                      : generatorMode === 'cards' && cardType === option.id;
-                  return (
-                    <button
-                      key={option.id}
-                      onClick={() => {
-                        beginPreviewReload();
-                        if (option.mode === 'contrib3d') {
-                          setGeneratorMode('contrib3d');
-                        } else {
-                          setGeneratorMode('cards');
-                          setCardType(option.id);
-                        }
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '12px',
-                        borderRadius: '12px',
-                        border: '1px solid',
-                        borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
-                        backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
-                        color: isSelected ? 'var(--primary)' : 'var(--text-muted)',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        boxShadow: isSelected ? '0 0 0 1px var(--primary)' : 'none',
-                      }}
-                    >
-                      <Icon size={16} />
-                      <span>
-                        <span style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: isSelected ? 'var(--text-main)' : 'var(--text-muted)' }}>
-                          {option.label}
-                        </span>
-                        <span style={{ display: 'block', marginTop: '3px', fontSize: '10px', color: 'var(--text-subtle)' }}>
-                          {option.desc}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {generatorMode === 'cards' && cardType === 'streak' && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={transparentStreak}
-                    onChange={(e) => {
-                      beginPreviewReload();
-                      setTransparentStreak(e.target.checked);
-                    }}
-                  />
-                  Transparent background
-                </label>
-              )}
-            </div>
-
-            
-            {generatorMode === 'cards' ? (
-            <div className="glass-panel" style={{ padding: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                <div
-                  style={{
-                    padding: '6px',
-                    borderRadius: '8px',
-                    backgroundColor: 'var(--brand-icon-bg)',
-                    color: 'var(--brand-icon-color)',
-                    display: 'flex',
-                  }}
-                >
-                  <Palette size={16} />
-                </div>
-                <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)' }}>
-                  Card Theme
-                </h2>
-              </div>
-
               <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(95px, 1fr))',
-                  gap: '10px',
-                }}
-              >
-                {CARD_THEMES.map((theme) => {
-                  const isSelected = selectedTheme === theme.id;
-                  return (
-                    <button
-                      key={theme.id}
-                      onClick={() => {
-                        beginPreviewReload();
-                        setGeneratorMode('cards');
-                        setSelectedTheme(theme.id);
-                      }}
-                      style={{
-                        padding: '10px 12px',
-                        borderRadius: '12px',
-                        border: '1px solid',
-                        borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
-                        backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        boxShadow: isSelected ? '0 0 0 1px var(--primary)' : 'none',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        
-                        <div
-                          style={{
-                            width: '32px',
-                            height: '18px',
-                            borderRadius: '5px',
-                            backgroundColor: theme.bgColor,
-                            border: '1px solid var(--border-field)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '3px',
-                            padding: '0 4px',
-                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: '5px',
-                              height: '5px',
-                              borderRadius: '50%',
-                              backgroundColor: theme.accentColor,
-                              flexShrink: 0,
-                            }}
-                          />
-                          <span
-                            style={{
-                              height: '2.5px',
-                              flex: 1,
-                              borderRadius: '2px',
-                              backgroundColor: theme.accentColor,
-                              opacity: 0.8,
-                            }}
-                          />
-                        </div>
-
-                        {isSelected && (
-                          <div
-                            style={{
-                              width: '14px',
-                              height: '14px',
-                              borderRadius: '50%',
-                              backgroundColor: 'var(--primary)',
-                              color: '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Check size={10} />
-                          </div>
-                        )}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: isSelected ? 600 : 500,
-                          color: isSelected ? 'var(--primary)' : 'var(--text-main)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {theme.name}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            ) : (
-            <div className="glass-panel" style={{ padding: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                <div
-                  style={{
-                    padding: '6px',
-                    borderRadius: '8px',
-                    backgroundColor: 'var(--brand-icon-bg)',
-                    color: 'var(--brand-icon-color)',
-                    display: 'flex',
-                  }}
-                >
-                  <Box size={16} />
-                </div>
-                <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)' }}>
-                  3D Style
-                </h2>
-              </div>
-
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
-                  gap: '10px',
-                }}
-              >
-                {CONTRIB_3D_STYLES.map((style) => {
-                  const isSelected = contrib3dStyle === style.id;
-                  return (
-                    <button
-                      key={style.id}
-                      type="button"
-                      onClick={() => {
-                        beginPreviewReload();
-                        setContrib3dStyle(style.id);
-                      }}
-                      style={{
-                        padding: '10px 12px',
-                        borderRadius: '12px',
-                        border: '1px solid',
-                        borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
-                        backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        boxShadow: isSelected
-                          ? '0 0 0 1px var(--primary)'
-                          : 'none',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          marginBottom: '8px',
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '32px',
-                            height: '18px',
-                            borderRadius: '5px',
-                            backgroundColor: style.bgColor,
-                            border: '1px solid var(--border-field)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '3px',
-                            padding: '0 4px',
-                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: '5px',
-                              height: '5px',
-                              borderRadius: '50%',
-                              backgroundColor: style.accentColor,
-                              flexShrink: 0,
-                            }}
-                          />
-                          <span
-                            style={{
-                              height: '2.5px',
-                              flex: 1,
-                              borderRadius: '2px',
-                              backgroundColor: style.accentColor,
-                              opacity: 0.8,
-                            }}
-                          />
-                        </div>
-                        {isSelected && <Check size={14} style={{ color: 'var(--primary)' }} />}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          color: isSelected ? 'var(--text-main)' : 'var(--text-muted)',
-                        }}
-                      >
-                        {style.name}
-                      </div>
-                      <div
-                        style={{
-                          marginTop: '3px',
-                          fontSize: '10px',
-                          color: 'var(--text-subtle)',
-                          lineHeight: 1.35,
-                        }}
-                      >
-                        {style.description}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <label
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  marginTop: '14px',
-                  color: 'var(--text-muted)',
-                  fontSize: '12px',
-                  cursor: 'pointer',
+                  justifyContent: 'space-between',
+                  gap: '12px',
+                  marginBottom: '16px',
+                  flexWrap: 'wrap',
                 }}
               >
-                <input
-                  type="checkbox"
-                  checked={contrib3dAnimate}
-                  onChange={(e) => {
-                    beginPreviewReload();
-                    setContrib3dAnimate(e.target.checked);
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div
+                    style={{
+                      padding: '6px',
+                      borderRadius: '8px',
+                      backgroundColor: 'var(--brand-icon-bg)',
+                      color: 'var(--brand-icon-color)',
+                      display: 'flex',
+                    }}
+                  >
+                    {configPanelTab === 'format' ? (
+                      <FileCode size={16} />
+                    ) : generatorMode === 'contrib3d' ? (
+                      <Box size={16} />
+                    ) : (
+                      <Palette size={16} />
+                    )}
+                  </div>
+                  <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)' }}>
+                    {configPanelTab === 'format'
+                      ? 'Card Format'
+                      : generatorMode === 'contrib3d'
+                        ? '3D Style'
+                        : 'Card Theme'}
+                  </h2>
+                </div>
+
+                <div
+                  style={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '3px',
+                    borderRadius: '10px',
+                    backgroundColor: 'var(--theme-switch-bg)',
+                    border: '1px solid var(--theme-switch-border)',
+                    gap: '2px',
                   }}
-                />
-                Animated SVG
-              </label>
+                >
+                  {(
+                    [
+                      { id: 'format' as const, label: 'Format', icon: FileCode },
+                      {
+                        id: 'style' as const,
+                        label: generatorMode === 'contrib3d' ? '3D Style' : 'Theme',
+                        icon: generatorMode === 'contrib3d' ? Box : Palette,
+                      },
+                    ] as const
+                  ).map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = configPanelTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setConfigPanelTab(tab.id)}
+                        className="embed-tab-btn"
+                        style={{
+                          position: 'relative',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '5px 10px',
+                          borderRadius: '7px',
+                          fontSize: '11.5px',
+                          fontWeight: isActive ? 600 : 500,
+                          border: 'none',
+                          backgroundColor: 'transparent',
+                          color: isActive ? 'var(--theme-pill-color)' : 'var(--text-muted)',
+                          cursor: 'pointer',
+                          zIndex: 1,
+                          transition: 'color 0.15s ease',
+                        }}
+                      >
+                        {isMounted && isActive && (
+                          <motion.div
+                            layoutId="active-config-tab-pill"
+                            transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                            style={{
+                              position: 'absolute',
+                              inset: 0,
+                              borderRadius: '7px',
+                              backgroundColor: 'var(--theme-pill-bg)',
+                              border: '1px solid var(--theme-pill-border)',
+                              boxShadow: 'var(--theme-pill-shadow)',
+                              zIndex: -1,
+                            }}
+                          />
+                        )}
+                        <Icon size={13} />
+                        <span>{tab.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {configPanelTab === 'format' ? (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
+                    {[
+                      { id: 'insight' as const, mode: 'cards' as const, label: 'Full Insights', desc: 'Complete analytics card', icon: Sparkles },
+                      { id: 'stats' as const, mode: 'cards' as const, label: 'Stats Card', desc: 'Stars, PRs, issues & rank', icon: Activity },
+                      { id: 'graph' as const, mode: 'cards' as const, label: 'Graph Card', desc: '31-day contribution chart', icon: LineChart },
+                      { id: 'streak' as const, mode: 'cards' as const, label: 'Streak Card', desc: 'Compact streak-only card', icon: Trophy },
+                      { id: 'contrib3d' as const, mode: 'contrib3d' as const, label: '3D Contribution', desc: '3D calendar, radar & languages', icon: Box },
+                    ].map((option) => {
+                      const Icon = option.icon;
+                      const isSelected =
+                        option.mode === 'contrib3d'
+                          ? generatorMode === 'contrib3d'
+                          : generatorMode === 'cards' && cardType === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          onClick={() => {
+                            beginPreviewReload();
+                            if (option.mode === 'contrib3d') {
+                              setGeneratorMode('contrib3d');
+                            } else {
+                              setGeneratorMode('cards');
+                              setCardType(option.id);
+                            }
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '12px',
+                            borderRadius: '12px',
+                            border: '1px solid',
+                            borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
+                            backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
+                            color: isSelected ? 'var(--primary)' : 'var(--text-muted)',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            boxShadow: isSelected ? '0 0 0 1px var(--primary)' : 'none',
+                          }}
+                        >
+                          <Icon size={16} />
+                          <span>
+                            <span style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: isSelected ? 'var(--text-main)' : 'var(--text-muted)' }}>
+                              {option.label}
+                            </span>
+                            <span style={{ display: 'block', marginTop: '3px', fontSize: '10px', color: 'var(--text-subtle)' }}>
+                              {option.desc}
+                            </span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {generatorMode === 'cards' && cardType === 'streak' && (
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={transparentStreak}
+                        onChange={(e) => {
+                          beginPreviewReload();
+                          setTransparentStreak(e.target.checked);
+                        }}
+                      />
+                      Transparent background
+                    </label>
+                  )}
+                </>
+              ) : generatorMode === 'cards' ? (
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(95px, 1fr))',
+                    gap: '10px',
+                  }}
+                >
+                  {CARD_THEMES.map((theme) => {
+                    const isSelected = selectedTheme === theme.id;
+                    return (
+                      <button
+                        key={theme.id}
+                        onClick={() => {
+                          beginPreviewReload();
+                          setGeneratorMode('cards');
+                          setSelectedTheme(theme.id);
+                        }}
+                        style={{
+                          padding: '10px 12px',
+                          borderRadius: '12px',
+                          border: '1px solid',
+                          borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
+                          backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          boxShadow: isSelected ? '0 0 0 1px var(--primary)' : 'none',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <div
+                            style={{
+                              width: '32px',
+                              height: '18px',
+                              borderRadius: '5px',
+                              backgroundColor: theme.bgColor,
+                              border: '1px solid var(--border-field)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                              padding: '0 4px',
+                              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: '5px',
+                                height: '5px',
+                                borderRadius: '50%',
+                                backgroundColor: theme.accentColor,
+                                flexShrink: 0,
+                              }}
+                            />
+                            <span
+                              style={{
+                                height: '2.5px',
+                                flex: 1,
+                                borderRadius: '2px',
+                                backgroundColor: theme.accentColor,
+                                opacity: 0.8,
+                              }}
+                            />
+                          </div>
+
+                          {isSelected && (
+                            <div
+                              style={{
+                                width: '14px',
+                                height: '14px',
+                                borderRadius: '50%',
+                                backgroundColor: 'var(--primary)',
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Check size={10} />
+                            </div>
+                          )}
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: isSelected ? 600 : 500,
+                            color: isSelected ? 'var(--primary)' : 'var(--text-main)',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {theme.name}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
+                      gap: '10px',
+                    }}
+                  >
+                    {CONTRIB_3D_STYLES.map((style) => {
+                      const isSelected = contrib3dStyle === style.id;
+                      return (
+                        <button
+                          key={style.id}
+                          type="button"
+                          onClick={() => {
+                            beginPreviewReload();
+                            setContrib3dStyle(style.id);
+                          }}
+                          style={{
+                            padding: '10px 12px',
+                            borderRadius: '12px',
+                            border: '1px solid',
+                            borderColor: isSelected ? 'var(--primary)' : 'var(--border-option)',
+                            backgroundColor: isSelected ? 'var(--bg-card-hover)' : 'var(--bg-subtle)',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            boxShadow: isSelected
+                              ? '0 0 0 1px var(--primary)'
+                              : 'none',
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              marginBottom: '8px',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: '32px',
+                                height: '18px',
+                                borderRadius: '5px',
+                                backgroundColor: style.bgColor,
+                                border: '1px solid var(--border-field)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '3px',
+                                padding: '0 4px',
+                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: '5px',
+                                  height: '5px',
+                                  borderRadius: '50%',
+                                  backgroundColor: style.accentColor,
+                                  flexShrink: 0,
+                                }}
+                              />
+                              <span
+                                style={{
+                                  height: '2.5px',
+                                  flex: 1,
+                                  borderRadius: '2px',
+                                  backgroundColor: style.accentColor,
+                                  opacity: 0.8,
+                                }}
+                              />
+                            </div>
+                            {isSelected && <Check size={14} style={{ color: 'var(--primary)' }} />}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              color: isSelected ? 'var(--text-main)' : 'var(--text-muted)',
+                            }}
+                          >
+                            {style.name}
+                          </div>
+                          <div
+                            style={{
+                              marginTop: '3px',
+                              fontSize: '10px',
+                              color: 'var(--text-subtle)',
+                              lineHeight: 1.35,
+                            }}
+                          >
+                            {style.description}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      marginTop: '14px',
+                      color: 'var(--text-muted)',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={contrib3dAnimate}
+                      onChange={(e) => {
+                        beginPreviewReload();
+                        setContrib3dAnimate(e.target.checked);
+                      }}
+                    />
+                    Animated SVG
+                  </label>
+                </>
+              )}
             </div>
-            )}
 
             
             {generatorMode === 'cards' && cardType === 'insight' && (
@@ -1619,7 +1673,7 @@ export default function Home() {
                         marginBottom: '16px',
                       }}
                     >
-                      <RotateCw size={22} className="animate-spin" style={{ color: '#60a5fa' }} />
+                      <RotateCw size={22} className="animate-spin" style={{ color: '#70a5fd' }} />
                     </div>
                     <div className="preview-stage-empty-title" style={{ fontSize: '15px', fontWeight: 700, marginBottom: '4px' }}>
                       {generatorMode === 'contrib3d'
