@@ -1839,6 +1839,7 @@ export default function Home() {
             gap: '10px',
           }}
         >
+          <div>Free and open source</div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <a
               href="https://github.com/christianalberto/github-insights"
