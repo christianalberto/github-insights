@@ -293,14 +293,14 @@ pre, code, .font-mono {
   background-color: var(--bg-card);
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-hover);
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .glass-panel:hover {
-  border-color: var(--border-hover);
+  border-color: var(--accent-secondary);
   box-shadow: var(--shadow-md);
 }
 
