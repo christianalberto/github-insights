@@ -61,7 +61,7 @@ const CARD_THEMES: CardThemeOption[] = [
   { id: 'neo_green', name: 'Neo Green', bgColor: '#121212', cardColor: '#181818', accentColor: '#00c875', textColor: '#a6e22e' },
 ];
 
-const DEMO_USERNAMES = ['mojombo', 'torvalds', 'karpathy', 'sindresorhus', 'gaearon', 'christianalberto'];
+const DEMO_USERNAMES = ['hzoo', 'torvalds', 'ljharb', 'timrogers', 'driesvints', 'christianalberto'];
 const QUICK_EXCLUDE_LANGS = ['HTML', 'CSS', 'Jupyter Notebook', 'SCSS', 'Makefile'];
 
 function GitHubLogo({ size = 18 }: { size?: number }) {
