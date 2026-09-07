@@ -14,6 +14,8 @@
   <a href="https://github-profiles-insights.vercel.app">Live Demo</a> •
   <a href="#features">Features</a> •
   <a href="#usage">Usage</a> •
+  <a href="#insight-cards">Insight Cards</a> •
+  <a href="#profile-3d-contribution">3D Contribution</a> •
   <a href="#self-hosting">Self-Hosting</a>
 </p>
 
@@ -55,10 +57,7 @@
 
 Replace `YOUR_USERNAME` with your GitHub username.
 
-<details>
-<summary><strong>📊 Insight Cards</strong> — formats, themes, parameters & examples</summary>
-
-<br>
+## Insight Cards
 
 ### Card types
 
@@ -88,7 +87,9 @@ Replace `YOUR_USERNAME` with your GitHub username.
 
 ### Examples
 
-Full insights:
+#### Full insights
+
+![Full insights example](public/profile/example-full-insights.svg)
 
 ```markdown
 <p align="center">
@@ -96,7 +97,9 @@ Full insights:
 </p>
 ```
 
-Stats card:
+#### Stats card
+
+![Stats card example](public/profile/example-stats.svg)
 
 ```markdown
 <p align="center">
@@ -104,7 +107,9 @@ Stats card:
 </p>
 ```
 
-Graph card:
+#### Graph card
+
+![Graph card example](public/profile/example-graph.svg)
 
 ```markdown
 <p align="center">
@@ -112,7 +117,9 @@ Graph card:
 </p>
 ```
 
-Streak card:
+#### Streak card
+
+![Streak card example](public/profile/example-streak.svg)
 
 ```markdown
 <p align="center">
@@ -122,7 +129,11 @@ Streak card:
 
 Add `&transparent=true` to the streak card for a transparent background. Example: `theme=ember_void&transparent=true`.
 
-Hide languages:
+![Transparent streak example](public/profile/example-streak-transparent.svg)
+
+#### Hide languages
+
+![Hide languages example](public/profile/example-hide-langs.svg)
 
 ```markdown
 <p align="center">
@@ -145,12 +156,7 @@ Hide languages:
 | `aurora_night` | [![Aurora Night](public/profile/aurora_night.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=aurora_night&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 | `ember_void` | [![Ember Void](public/profile/ember_void.svg)](https://github-profiles-insights.vercel.app/api/insight?username=mojombo&theme=ember_void&graph=false&languages=false&streak=false&stats=false&header=false&summary=false&profile=true) |
 
-</details>
-
-<details>
-<summary><strong>🧊 Profile 3D Contribution</strong> — overview, styles, parameters & examples</summary>
-
-<br>
+## Profile 3D Contribution
 
 ![3D Contribution demo](docs/demo/profile-gitblock.svg)
 
@@ -313,9 +319,6 @@ docs/demo/profile-alberto.svg
 3D rendering engine adapted from [yoshi389111/github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib) (MIT).  
 Original © 2021 SATO Yoshiyuki.
 
-</details>
-
-
 ## Self-Hosting
 
 ### Prerequisites
@@ -405,16 +408,22 @@ Contributions are welcome! Feel free to:
 
 ## License
 
-MIT License. Copyright holders:
+MIT License. See the [LICENSE](LICENSE) file for details.
 
+**Author / Maintainer:** [@christianalberto](https://github.com/christianalberto)
+
+Copyright holders:
+
+- **Christian Alberto** — author & maintainer of this fork (standalone cards, 3D contribution, UI)
+- **NISHAT MAHMUD ([@nishatrhythm](https://github.com/nishatrhythm))** — original [GitHub Insights](https://github.com/nishatrhythm/GitHub-Insights)
 - **SATO, Yoshiyuki** — [github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib)
-- **NISHAT MAHMUD** — original GitHub Insights
-- **Christian Alberto** — current maintainer & integrations
-
-See the [LICENSE](LICENSE) file for details.
 
 ---
 
 <p align="center">
-  <strong>Free and open source</strong><br>  
+  <a href="https://github.com/christianalberto/github-insights">GitHub Repository</a>
+  &nbsp;•&nbsp;
+  <a href="https://github.com/christianalberto/github-insights/blob/main/LICENSE">MIT License</a>
+  &nbsp;•&nbsp;
+  Author: <a href="https://github.com/christianalberto">@christianalberto</a>
 </p>

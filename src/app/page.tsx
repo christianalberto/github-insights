@@ -1871,6 +1871,25 @@ export default function Home() {
             >
               MIT License
             </a>
+            <span>•</span>
+            <span>
+              Author:{' '}
+              <a
+                href="https://github.com/christianalberto"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: 'var(--text-muted)',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                  transition: 'color 0.15s ease',
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.color = 'var(--text-main)')}
+                onMouseOut={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+              >
+                @christianalberto
+              </a>
+            </span>
           </div>
         </motion.footer>
 
