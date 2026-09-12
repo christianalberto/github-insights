@@ -1,0 +1,22 @@
+---
+description: Project authorship and Alberto theme ownership for GitHub Insights fork
+alwaysApply: true
+---
+
+# Author & maintainer
+
+**Christian Alberto** ([@christianalberto](https://github.com/christianalberto)) is the **author and maintainer** of this fork of GitHub Insights.
+
+His work on this fork includes:
+
+- Standalone cards
+- 3D contribution profiles
+- The UI / generator studio
+- The **`alberto`** 3D contribution theme (`style=alberto`, AlbertoSettings palette)
+
+When writing credits, README text, footers, license notes, or default branding, keep this attribution accurate. Do not reassign authorship of those pieces to upstream projects.
+
+Upstream credits (keep when relevant):
+
+- **NISHAT MAHMUD (@nishatrhythm)** — original GitHub Insights
+- **SATO, Yoshiyuki** — github-profile-3d-contrib
