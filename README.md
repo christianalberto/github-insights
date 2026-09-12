@@ -37,6 +37,8 @@
 
 ## Usage
 
+> **Star required:** Cards only generate if the GitHub username you request has starred [`christianalberto/github-insights`](https://github.com/christianalberto/github-insights). After starring, embeds and the studio unlock for that user.
+
 ### Quick Start
 
 **Insight card:**
@@ -367,6 +369,13 @@ Original © 2021 SATO Yoshiyuki.
    GITHUB_TOKEN=your_token_here
    ```
 
+   Optional star-gate settings (enabled by default):
+   ```
+   REQUIRE_REPO_STAR=true
+   STAR_REPO_OWNER=christianalberto
+   STAR_REPO_NAME=github-insights
+   ```
+   Set `REQUIRE_REPO_STAR=false` locally if you want to skip the star check while developing.
 5. **Run the development server**
    ```bash
    npm run dev

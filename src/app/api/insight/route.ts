@@ -7,6 +7,10 @@ import {
   generateGraphCard,
 } from '@/lib/card-generator';
 import { getTheme } from '@/lib/themes';
+import {
+  assertUserStarredRepo,
+  isStarRequiredError,
+} from '@/lib/star-gate';
 
 function generateETag(content: string): string {
   let h1 = 0xdeadbeef;
@@ -89,6 +93,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    await assertUserStarredRepo(username);
+
     const stats = await fetchGitHubStats(username, hiddenLanguages);
     const theme = getTheme(themeName);
 
@@ -138,11 +144,12 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error generating insight card:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to generate stats';
-    
+    const status = isStarRequiredError(error) ? 403 : 500;
+
     return new NextResponse(
       generateErrorCard(errorMessage, getTheme('github_dark')),
       {
-        status: 500,
+        status,
         headers: {
           'Content-Type': 'image/svg+xml',
           'Cache-Control': 'no-cache, no-store, must-revalidate',

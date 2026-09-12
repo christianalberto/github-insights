@@ -28,11 +28,13 @@ import {
   History,
   Plus,
   Box,
+  Star,
 } from 'lucide-react';
 import {
   CONTRIB_3D_STYLES,
   type Contrib3dStyleId,
 } from '@/lib/contrib-3d/styles';
+import { STAR_GATE_ALLOWLIST } from '@/lib/star-gate';
 
 type SiteTheme = 'light' | 'dark' | 'system';
 type CardType = 'insight' | 'streak' | 'stats' | 'graph';
@@ -61,8 +63,15 @@ const CARD_THEMES: CardThemeOption[] = [
   { id: 'neo_green', name: 'Neo Green', bgColor: '#121212', cardColor: '#181818', accentColor: '#00c875', textColor: '#a6e22e' },
 ];
 
-const DEMO_USERNAMES = ['hzoo', 'torvalds', 'ljharb', 'timrogers', 'driesvints', 'christianalberto'];
+const DEMO_USERNAMES = [...STAR_GATE_ALLOWLIST];
 const QUICK_EXCLUDE_LANGS = ['HTML', 'CSS', 'Jupyter Notebook', 'SCSS', 'Makefile'];
+const PROJECT_REPO_URL = 'https://github.com/christianalberto/github-insights';
+const PROJECT_REPO_FULL_NAME = 'christianalberto/github-insights';
+
+function isStarRequiredMessage(message: string | null | undefined): boolean {
+  if (!message) return false;
+  return /please star|star .+ to unlock|star required/i.test(message);
+}
 
 function GitHubLogo({ size = 18 }: { size?: number }) {
   return (
@@ -239,6 +248,9 @@ export default function Home() {
     }
 
     if (response.status === 404) return 'User not found on GitHub';
+    if (response.status === 403) {
+      return `Please star ${PROJECT_REPO_FULL_NAME} to unlock cards for this username`;
+    }
     if (response.status >= 500) return 'Server error while generating preview';
     return `Failed to generate preview (${response.status})`;
   };
@@ -598,7 +610,7 @@ export default function Home() {
 
             
             <a
-              href="https://github.com/christianalberto/github-insights"
+              href={PROJECT_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-secondary star-btn"
@@ -632,7 +644,7 @@ export default function Home() {
           >
             <span className="hero-kicker">
               <span className="hero-kicker-dot" />
-              Open source · README ready
+              Free · Star the repo to unlock
             </span>
           </motion.div>
 
@@ -669,6 +681,7 @@ export default function Home() {
             }}
           >
             Generate insight, stats, streak, graph, and 3D contribution SVGs — then drop them into your profile.
+            Star <a href={PROJECT_REPO_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>{PROJECT_REPO_FULL_NAME}</a> with the same GitHub account to unlock generation.
           </motion.p>
 
           
@@ -1611,42 +1624,115 @@ export default function Home() {
                     </p>
                   </div>
                 ) : hasError ? (
-                  <div style={{ textAlign: 'center', padding: '36px 20px', maxWidth: '400px' }}>
+                  <div style={{ textAlign: 'center', padding: '36px 20px', maxWidth: '420px' }}>
                     <div
                       style={{
                         width: '44px',
                         height: '44px',
                         borderRadius: '12px',
                         margin: '0 auto 12px',
-                        backgroundColor: 'rgba(248, 81, 73, 0.12)',
-                        color: '#f85149',
-                        border: '1px solid rgba(248, 81, 73, 0.3)',
+                        backgroundColor: isStarRequiredMessage(errorMessage)
+                          ? 'rgba(210, 153, 34, 0.12)'
+                          : 'rgba(248, 81, 73, 0.12)',
+                        color: isStarRequiredMessage(errorMessage) ? '#d29922' : '#f85149',
+                        border: isStarRequiredMessage(errorMessage)
+                          ? '1px solid rgba(210, 153, 34, 0.35)'
+                          : '1px solid rgba(248, 81, 73, 0.3)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <AlertCircle size={22} />
+                      {isStarRequiredMessage(errorMessage) ? <Star size={22} /> : <AlertCircle size={22} />}
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: 600, color: '#f85149', marginBottom: '6px' }}>
+                    <div
+                      style={{
+                        fontSize: '15px',
+                        fontWeight: 600,
+                        color: isStarRequiredMessage(errorMessage) ? '#d29922' : '#f85149',
+                        marginBottom: '6px',
+                      }}
+                    >
                       {errorMessage &&
                       /(user .+ not found|could not resolve to a user|not found on github)/i.test(
                         errorMessage
                       )
                         ? 'User Not Found'
-                        : 'Preview Failed'}
+                        : isStarRequiredMessage(errorMessage)
+                          ? 'Star Required'
+                          : 'Preview Failed'}
                     </div>
                     <p className="preview-stage-empty-desc" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
-                      {errorMessage || (
+                      {isStarRequiredMessage(errorMessage) ? (
                         <>
-                          Could not generate preview for{' '}
+                          To generate cards for{' '}
                           <strong style={{ color: '#e6edf3', fontFamily: 'var(--font-mono)' }}>
                             @{generatedUsername}
                           </strong>
-                          .
+                          , that GitHub user must star{' '}
+                          <strong style={{ color: '#e6edf3', fontFamily: 'var(--font-mono)' }}>
+                            {PROJECT_REPO_FULL_NAME}
+                          </strong>
+                          . After starring, click retry.
                         </>
+                      ) : (
+                        errorMessage || (
+                          <>
+                            Could not generate preview for{' '}
+                            <strong style={{ color: '#e6edf3', fontFamily: 'var(--font-mono)' }}>
+                              @{generatedUsername}
+                            </strong>
+                            .
+                          </>
+                        )
                       )}
                     </p>
+                    {isStarRequiredMessage(errorMessage) && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '8px',
+                          justifyContent: 'center',
+                          marginTop: '16px',
+                        }}
+                      >
+                        <a
+                          href={PROJECT_REPO_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-secondary"
+                          style={{
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '8px 14px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                          }}
+                        >
+                          <Star size={14} />
+                          Star repository
+                        </a>
+                        <button
+                          type="button"
+                          className="btn-primary"
+                          onClick={() => setGenerateNonce((n) => n + 1)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '8px 14px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                          }}
+                        >
+                          <RotateCw size={14} />
+                          I starred it — retry
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : !hasLoaded || isGenerating ? (
                   <div
@@ -1896,7 +1982,7 @@ export default function Home() {
           <div>Free and open source</div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <a
-              href="https://github.com/christianalberto/github-insights"
+              href={PROJECT_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -1912,7 +1998,7 @@ export default function Home() {
             </a>
             <span>•</span>
             <a
-              href="https://github.com/christianalberto/github-insights/blob/main/LICENSE"
+              href={`${PROJECT_REPO_URL}/blob/main/LICENSE`}
               target="_blank"
               rel="noopener noreferrer"
               style={{

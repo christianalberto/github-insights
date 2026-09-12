@@ -3,6 +3,10 @@ import {
   generateContrib3dSvg,
   isContrib3dStyleId,
 } from '@/lib/contrib-3d';
+import {
+  assertUserStarredRepo,
+  isStarRequiredError,
+} from '@/lib/star-gate';
 
 export const runtime = 'nodejs';
 
@@ -105,6 +109,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    await assertUserStarredRepo(username);
+
     const svg = await generateContrib3dSvg(username, styleParam, {
       animate,
       year,
@@ -139,9 +145,10 @@ export async function GET(request: NextRequest) {
     console.error('Error generating 3D contribution profile:', error);
     const errorMessage =
       error instanceof Error ? error.message : 'Failed to generate 3D profile';
+    const status = isStarRequiredError(error) ? 403 : 500;
 
     return new NextResponse(generateErrorCard(errorMessage), {
-      status: 500,
+      status,
       headers: {
         'Content-Type': 'image/svg+xml',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
