@@ -423,7 +423,7 @@ MIT License. See the [LICENSE](LICENSE) file for details.
 
 Copyright holders:
 
-- **Christian Alberto** — author & maintainer of this fork (standalone cards, 3D contribution, UI, `alberto` theme)
+- **Christian Alberto** — author & maintainer of this fork (standalone cards, 3D contribution, UI, `alberto` 3D theme)
 - **NISHAT MAHMUD ([@nishatrhythm](https://github.com/nishatrhythm))** — original [GitHub Insights](https://github.com/nishatrhythm/GitHub-Insights)
 - **SATO, Yoshiyuki** — [github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib)
 
